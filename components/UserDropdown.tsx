@@ -63,7 +63,7 @@ export default function UserDropdown() {
               className="block !outline-none w-full rounded-md p-2 text-sm transition-all duration-75 hover:bg-gray-100 active:bg-gray-200"
             >
               <IconMenu
-                text="Projects"
+                text="Components"
                 icon={<Component className="h-4 w-4" />}
               />
             </Link>
