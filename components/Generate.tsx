@@ -1,6 +1,6 @@
 "use client";
 
-import { cn, downloadHTML, updateProject } from "@/utils/helpers";
+import { cn, downloadHTML, nanoid, updateProject } from "@/utils/helpers";
 import Socials from "@/components/Socials";
 import Image from "next/image";
 import BrowserWindow from "@/components/BrowserWindow";
@@ -15,6 +15,7 @@ import useSearchParams from "@/hooks/useSearchParams";
 import { useChat } from "ai/react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { githubGist } from "react-syntax-highlighter/dist/cjs/styles/hljs";
+import { realtime } from "@/utils/altogic";
 
 const theme = githubGist;
 
@@ -22,7 +23,6 @@ const exampleText = "A login form with social provider options";
 
 export default function Generate(props: { reset: () => void }) {
   const { user, setUser } = useAuth();
-  const [lastMessageId, setLastMessageId] = useState<string | null>(null);
   const [hasNoCreditsError, setHasNoCreditsError] = useState(false);
   const { set } = useSearchParams();
   const [firstPrompt, setFirstPrompt] = useState<null | string>(null);
@@ -30,6 +30,22 @@ export default function Generate(props: { reset: () => void }) {
   const iframeRef = useRef(null);
   const [codeViewActive, setCodeViewActive] = useState(false);
   const [showedRatingModal, setShowedRatingModal] = useState(false);
+  const [nanoId, setNanoId] = useState<string>();
+  const [projectId, setProjectId] = useState<string>();
+
+  useEffect(() => {
+    const roomId = nanoid();
+    setNanoId(roomId);
+    realtime.join(roomId);
+
+    const callback = ({ message }: any) => setProjectId(message.projectId);
+
+    realtime.on("projectId", callback);
+    return () => {
+      realtime.off("projectId", callback);
+      realtime.leave(roomId);
+    };
+  }, []);
 
   const {
     messages,
@@ -40,9 +56,12 @@ export default function Generate(props: { reset: () => void }) {
     isLoading,
     stop,
   } = useChat({
+    body: {
+      projectId,
+      channelId: nanoId,
+    },
     onResponse: (message) => {
       setHasNoCreditsError(false);
-      setLastMessageId(null);
       decreaseCredit();
     },
     onFinish: async (message) => {
@@ -51,7 +70,7 @@ export default function Generate(props: { reset: () => void }) {
         setCredits(res.credits);
         setHasNoCreditsError(res.credits === 0);
       } catch {
-        await saveResult(message.content);
+        await saveResult(message.content, projectId);
       }
     },
   });
@@ -85,11 +104,13 @@ export default function Generate(props: { reset: () => void }) {
     }
   }
 
-  async function saveResult(result: string) {
-    const { _id } = await updateProject({
-      result,
-    });
-    setLastMessageId(_id);
+  async function saveResult(result: string, projectId?: string) {
+    await updateProject(
+      {
+        result,
+      },
+      projectId,
+    );
 
     if (!showedRatingModal) {
       set("rateModal", "true");
@@ -292,7 +313,7 @@ export default function Generate(props: { reset: () => void }) {
 
         {isLoading && !iframeContent && <LoadingSpinner />}
       </div>
-      <RateModal key={lastMessageId} show={!!lastMessageId} />
+      <RateModal key={projectId} show={!!projectId} />
     </>
   );
 }

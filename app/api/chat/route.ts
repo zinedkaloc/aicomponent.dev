@@ -3,6 +3,7 @@ import { Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import altogic from "@/utils/altogic";
 
 const config = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -15,26 +16,34 @@ export const runtime = "edge";
 export async function POST(req: Request) {
   const cookieStore = cookies();
 
-  const { messages } = await req.json();
+  const { messages, ...rest } = await req.json();
 
   const sessionToken = cookieStore.get("sessionToken")?.value as string;
 
-  const storeMessage = await fetch(
-    `${process.env.NEXT_PUBLIC_ALTOGIC_API_BASE_URL}/test`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Session: sessionToken,
+  // @ts-ignore
+  altogic.auth.setSession({
+    token: sessionToken,
+  });
+
+  if (!rest.projectId) {
+    const storeMessage = await fetch(
+      `${process.env.NEXT_PUBLIC_ALTOGIC_API_BASE_URL}/test`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Session: sessionToken,
+        },
+        body: JSON.stringify({ content: messages[0].content }),
       },
-      body: JSON.stringify({ content: messages[0].content }),
-    },
-  );
+    );
 
-  const { credits } = await storeMessage.json();
+    const { credits, _id } = await storeMessage.json();
+    altogic.realtime.send(rest.channelId, "projectId", { projectId: _id });
 
-  if (credits === 0) {
-    return NextResponse.json({ code: "no-credits", credits });
+    if (credits === 0) {
+      return NextResponse.json({ code: "no-credits", credits });
+    }
   }
 
   const systemPrompt = `You've been entrusted as the lead designer to architect a striking and engaging design system using Tailwind CSS and Alpine.js for a state-of-the-art application. The goal is to build a design system that ensures rapid and consistent development of UI components for our application, captivating users with their visual appeal and functionality.

@@ -13,4 +13,16 @@ const altogic = createClient(apiBaseURL, clientKey, {
   signInRedirect: "/",
 });
 
+const realTimeToken = process.env.NEXT_PUBLIC_REALTIME_TOKEN;
+
+if (!realTimeToken) {
+  throw new Error(
+    "Please define the NEXT_PUBLIC_REALTIME_TOKEN environment variable inside .env file",
+  );
+}
+
+const altogicClient = createClient(apiBaseURL, realTimeToken);
+
+export const realtime = altogicClient.realtime;
+
 export default altogic;

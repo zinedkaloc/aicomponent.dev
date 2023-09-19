@@ -34,8 +34,6 @@ export default async function RootLayout({
   const user = await fetchAuthUser();
   const products = await fetchProducts();
 
-  console.log({ products });
-
   return (
     <AuthProvider user={user ?? null}>
       <html lang="en">
