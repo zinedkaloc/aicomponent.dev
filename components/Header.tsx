@@ -25,8 +25,8 @@ export default function Header() {
   }
 
   return (
-    <header className="w-full px-6 py-4 absolute top-0">
-      <div className="flex justify-between items-center h-10">
+    <header className="w-full px-6 h-[72px]">
+      <div className="flex justify-between items-center h-full">
         <div className="flex items-center gap-2">
           <Logo href={isProjectPage ? `/profile/projects` : "/"} />
           {isProjectPage && (
@@ -79,7 +79,7 @@ export default function Header() {
           </a>
           {user && (
             <Button
-              className="auth-btn"
+              className="auth-btn hidden sm:block"
               variant="pill"
               onClick={openPricesModal}
             >

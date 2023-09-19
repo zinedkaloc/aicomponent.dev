@@ -1,14 +1,23 @@
 "use client";
-import { Gem, ReceiptIcon, Settings } from "lucide-react";
+import {
+  Gem,
+  ReceiptIcon,
+  Settings,
+  ShoppingCart,
+  Component,
+} from "lucide-react";
 import Popover from "@/components/Popover";
 import Badge from "@/components/Badge";
 import { useAuth } from "@/context/AuthContext";
 import IconMenu from "@/components/IconMenu";
 import LogoutIcon from "@/components/LogoutIcon";
 import Link from "next/link";
+import useSearchParams from "@/hooks/useSearchParams";
 
 export default function UserDropdown() {
   const { user } = useAuth();
+  const { set } = useSearchParams();
+
   return (
     <Popover
       content={
@@ -28,6 +37,15 @@ export default function UserDropdown() {
               variant={user?.credits === 0 ? "red" : "yellow"}
             />
           </div>
+          <Popover.Item
+            onClick={() => set("pricesModal", "true")}
+            className="!outline-none w-full rounded-md p-2 text-sm transition-all duration-75 hover:bg-gray-100 active:bg-gray-200 sm:hidden"
+          >
+            <IconMenu
+              text="Buy Credits"
+              icon={<ShoppingCart className="h-4 w-4" />}
+            />
+          </Popover.Item>
           <Popover.Item asChild>
             <Link
               href="/profile/invoices"
@@ -36,6 +54,17 @@ export default function UserDropdown() {
               <IconMenu
                 text="Invoices"
                 icon={<ReceiptIcon className="h-4 w-4" />}
+              />
+            </Link>
+          </Popover.Item>
+          <Popover.Item asChild>
+            <Link
+              href="/profile/projects"
+              className="block !outline-none w-full rounded-md p-2 text-sm transition-all duration-75 hover:bg-gray-100 active:bg-gray-200"
+            >
+              <IconMenu
+                text="Projects"
+                icon={<Component className="h-4 w-4" />}
               />
             </Link>
           </Popover.Item>

@@ -13,22 +13,6 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
       href: `/profile/projects/${id}`,
     },
     {
-      id: 2,
-      name: "Domains",
-      href: `/profile/projects/${id}/domains`,
-    },
-    {
-      id: 3,
-      name: "Preview",
-      href: `/profile/projects/${id}/preview`,
-      target: "_blank",
-    },
-    {
-      id: 4,
-      name: "Integrations",
-      href: `/profile/projects/${id}/integrations`,
-    },
-    {
       id: 5,
       name: "Settings",
       href: `/profile/projects/${id}/settings`,
@@ -37,7 +21,7 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
   const hasNoIdMenu: MenuItem[] = [
     {
       id: 1,
-      name: "Projects",
+      name: "Components",
       href: "/profile/projects",
     },
     {
@@ -53,7 +37,7 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <div className="pt-[72px] profile-page flex flex-col">
+    <div className="profile-page flex-1 flex flex-col">
       <ProfileMenu menuItems={id ? hasIdMenu : hasNoIdMenu} />
       {children}
     </div>

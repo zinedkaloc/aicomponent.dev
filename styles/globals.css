@@ -3,9 +3,12 @@
 @tailwind utilities;
 
 html,
-body,
-.profile-page {
+body {
   min-height: 100dvh;
+}
+
+body {
+  @apply flex flex-col;
 }
 
 @keyframes spin {
@@ -83,4 +86,12 @@ body:has(.modal) {
     left: 100%;
     top: 150px;
   }
+}
+
+.form-bg {
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }

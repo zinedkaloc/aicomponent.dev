@@ -12,7 +12,7 @@ export default function Logo({ href }: LogoProps) {
       className="flex items-center tracking-tight"
     >
       <strong className="font-bold text-xl">ai</strong>
-      <span className="text-xl">page.dev</span>
+      <span className="text-xl">component.dev</span>
     </Component>
   );
 }

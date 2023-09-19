@@ -14,10 +14,6 @@ export async function GET(req: Request) {
 
   const { session, errors } = await altogic.auth.getAuthGrant(accessToken);
 
-  if (errors) {
-    // TODO: handle errors;
-  }
-
   if (session) {
     response.cookies.set("sessionToken", session.token, {
       path: "/",

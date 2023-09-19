@@ -5,7 +5,7 @@ import { customAlphabet } from "nanoid";
 
 export const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-  7
+  7,
 ); // 7-character random string
 
 export function cn(...inputs: ClassValue[]) {
@@ -45,7 +45,7 @@ export function toReversed<T>(arr: T[]) {
 
 export async function updateProject(
   data: Omit<Partial<Project>, "_id">,
-  id?: string
+  id?: string,
 ) {
   const body = {
     ...data,
@@ -66,13 +66,12 @@ export function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function isAipage(host: string) {
-  const hosts = [
-    "localhost",
-    "localhost:3000",
-    "localhost:3000",
-    "ozgurozalp.test",
-    "aipage-dev.vercel.app",
-  ];
-  return hosts.includes(host);
+export function downloadHTML(content: string) {
+  const element = document.createElement("a");
+  const file = new Blob([content], { type: "text/html" });
+  element.href = URL.createObjectURL(file);
+  element.download = "index.html";
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
 }

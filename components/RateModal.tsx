@@ -9,7 +9,7 @@ import LoadingSpinner from "@/components/loadingSpinner";
 
 export default function RateModal({ show }: { show: boolean }) {
   const { deleteByKey, has } = useSearchParams();
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(5);
   const [ratingText, setRatingText] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -78,7 +78,7 @@ export default function RateModal({ show }: { show: boolean }) {
         <div className="bg-gray-50 p-4 border-t space-y-4">
           <p className="text-sm text-gray-500">
             Your feedback matters! Let us know how your experience was while
-            crafting your landing page with AI
+            crafting your components with AI
           </p>
           <textarea
             rows={3}

@@ -1,9 +1,8 @@
 import { Configuration, OpenAIApi } from "openai-edge";
 
 import { OpenAIStream, StreamingTextResponse } from "ai";
-import { headers, cookies } from "next/headers";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { nanoid } from "@/utils/helpers";
 
 const config = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -18,12 +17,10 @@ export async function POST(req: Request) {
 
   const { messages } = await req.json();
 
-  // Implemented for to test the API
-
   const sessionToken = cookieStore.get("sessionToken")?.value as string;
 
   const storeMessage = await fetch(
-    "https://c3-na.altogic.com/e:64d52ccfc66bd54b97bdd78a/test",
+    `${process.env.NEXT_PUBLIC_ALTOGIC_API_BASE_URL}/test`,
     {
       method: "POST",
       headers: {
@@ -31,7 +28,7 @@ export async function POST(req: Request) {
         Session: sessionToken,
       },
       body: JSON.stringify({ content: messages[0].content }),
-    }
+    },
   );
 
   const { credits } = await storeMessage.json();

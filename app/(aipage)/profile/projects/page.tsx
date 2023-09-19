@@ -28,7 +28,7 @@ export default async function ProfileProjects() {
           {!hasProjects ? (
             <div className="flex flex-1 flex-col items-center justify-center rounded-md border border-gray-200 bg-white py-12">
               <h2 className="z-10 text-xl font-semibold text-gray-700">
-                You don't have any projects yet!
+                You don't have any components yet!
               </h2>
               <img
                 alt="No links yet"
@@ -38,7 +38,7 @@ export default async function ProfileProjects() {
                 src="/no-project.png"
               />
               <Link href="/">
-                <Button variant="pill">Create a project</Button>
+                <Button variant="pill">Create a component</Button>
               </Link>
             </div>
           ) : (

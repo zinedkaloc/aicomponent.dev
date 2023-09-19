@@ -46,14 +46,10 @@ export default function ListProjects({ projects }: ListProjectsProps) {
             <div className="flex space-x-3 flex-1">
               <ProjectIcon className="shrink-0 self-start" />
               <div className="flex-1">
-                <h2 className="text-lg leading-[1.2] font-medium text-gray-700 truncate max-w-[15ch] md:max-w-[10ch] lg:max-w-[15ch] xl:max-w-[15ch]">
+                <h2 className="text-lg leading-[1.2] font-medium text-gray-700">
                   {project?.name ?? project?.content}
                 </h2>
-                <div className="flex items-center">
-                  <p className="text-gray-500 text-sm leading-[1]">
-                    example.com
-                  </p>
-                </div>
+                <div className="flex items-center"></div>
               </div>
             </div>
             <Badge
@@ -61,52 +57,7 @@ export default function ListProjects({ projects }: ListProjectsProps) {
               text={project.status ?? "draft"}
             />
           </div>
-          <div className="flex mt-auto items-center space-x-4">
-            <div className="flex items-center space-x-2 text-gray-500">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={24}
-                height={24}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-4 w-4"
-              >
-                <circle cx={12} cy={12} r={10} />
-                <line x1={2} x2={22} y1={12} y2={12} />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-              </svg>
-              <h2 className="whitespace-nowrap text-sm">
-                {project.domains ? project.domains.length : 0}{" "}
-                {project.domains?.length > 1 ? "domains" : "domain"}
-              </h2>
-            </div>
-            <div className="flex items-center space-x-2 text-gray-500">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={24}
-                height={24}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-4 w-4"
-              >
-                <line x1={18} x2={18} y1={20} y2={10} />
-                <line x1={12} x2={12} y1={20} y2={4} />
-                <line x1={6} x2={6} y1={20} y2={14} />
-              </svg>
-              <h2 className="whitespace-nowrap text-sm">
-                {project.click ?? 0}
-                {project.click > 1 ? " clicks" : " click"}
-              </h2>
-            </div>
-          </div>
+          <div className="flex mt-auto items-center space-x-4"></div>
         </Component>
       ))}
     </>

@@ -27,7 +27,10 @@ export async function fetchAuthUser() {
 export async function fetchProducts(): Promise<Product[]> {
   const path = process.env.NEXT_PUBLIC_GET_PRICES_PATH as string;
   const { data, errors } = await altogic.endpoint.get(path);
-  if (errors) throw new Error("Failed to fetch Products");
+  if (errors) {
+    console.log(JSON.stringify(errors, null, 4));
+    throw new Error("Failed to fetch Products");
+  }
   return data.data;
 }
 
@@ -93,7 +96,10 @@ export async function fetchProjects(): Promise<Project[] | null> {
   const { data, errors } = await altogic.endpoint.get("/projects", undefined, {
     Session: getSessionCookie(),
   });
-  if (errors) throw new Error("Failed to fetch Projects");
+  if (errors) {
+    console.log(JSON.stringify(errors, null, 4));
+    throw new Error("Failed to fetch Projects");
+  }
   return data.result;
 }
 

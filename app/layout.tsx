@@ -1,34 +1,24 @@
 import AuthModal from "@/components/AuthModal";
 import PricesModal from "@/components/PricesModal";
 import { AuthProvider } from "@/context/AuthContext";
-import { Project } from "@/types";
-import { fetchAuthUser, fetchProducts, getProjectByDomain } from "@/utils/auth";
-import { isAipage } from "@/utils/helpers";
+import { fetchAuthUser, fetchProducts } from "@/utils/auth";
 import { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { headers } from "next/headers";
 import { ReactNode } from "react";
 import "../styles/globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const isAipageDomain = isAipage(headers().get("Host") as string);
-  if (!isAipageDomain) {
-    const project = await getProjectByDomain(headers().get("Host") as string);
-    if (project) return {};
-  }
-
   return {
-    title: "AIPage.dev - An AI-Powered Landing Page Generator | by @zinedkaloc",
+    title: "AIComponent.dev - An AI-Powered Component Generator",
     description:
-      "AI-Powered Landing Page Generator. Experience the Open Source Project that Empowers You to Build Stunning Landing Pages Instantly",
+      "AI-Powered Component Generator. Experience the Open Source Project that Empowers You to Build Stunning Components Instantly",
     openGraph: {
-      title:
-        "AIPage.dev - An AI-Powered Landing Page Generator | by @zinedkaloc",
+      title: "AIComponent.dev - An AI-Powered Component Generator",
       description:
-        "AI-Powered Landing Page Generator. Experience the Open Source Project that Empowers You to Build Stunning Landing Pages Instantly",
+        "AI-Powered Component Generator. Experience the Open Source Project that Empowers You to Build Stunning Components Instantly",
       type: "website",
-      url: "https://aipage.dev",
+      url: "https://aicomponent.dev",
       images: `${process.env.NEXT_PUBLIC_DOMAIN}/api/og?text=${new Date()
         .getTime()
         .toString()}`,
@@ -41,18 +31,10 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  const isAipageDomain = isAipage(headers().get("Host") as string);
   const user = await fetchAuthUser();
   const products = await fetchProducts();
-  let project: Project | null = null;
 
-  if (!isAipageDomain) {
-    project = await getProjectByDomain(headers().get("Host") as string);
-  }
-
-  if (!isAipageDomain && project?.result) {
-    return require("html-react-parser")(project?.result);
-  }
+  console.log({ products });
 
   return (
     <AuthProvider user={user ?? null}>

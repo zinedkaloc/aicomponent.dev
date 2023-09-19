@@ -11,7 +11,7 @@ export default function Products({ products }: { products: ProductType[] }) {
           Support Our Mission
         </h1>
         <p className="text-center mt-5 text-lg text-gray-500 sm:text-center">
-          By choosing a plan, you’re not just building beautiful landing pages —
+          By choosing a plan, you’re not just building beautiful components —
           you’re becoming a cherished part of our journey and mission. Fuel our
           work so we can continue empowering your digital dreams. Every credit
           counts!

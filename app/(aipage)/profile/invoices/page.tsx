@@ -6,7 +6,6 @@ import { Invoice } from "@/types";
 
 export default async function InvoicesPage() {
   const invoices = await fetchInvoices();
-
   const hasInvoices = invoices?.length > 0;
 
   return (
