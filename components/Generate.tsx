@@ -1,39 +1,40 @@
 "use client";
 
-import {
-  cn,
-  downloadHTML,
-  initialIframeContent,
-  nanoid,
-  updateProject,
-} from "@/utils/helpers";
+import { cn, downloadHTML, nanoid, updateProject } from "@/utils/helpers";
 import BrowserWindow from "@/components/BrowserWindow";
 import LoadingSpinner from "@/components/loadingSpinner";
 import Button from "@/components/Button";
-import { Code2, Download, MonitorSmartphone, Plus } from "lucide-react";
+import {
+  Check,
+  Code2,
+  Download,
+  MonitorSmartphone,
+  Plus,
+  Share,
+} from "lucide-react";
 import RateModal from "@/components/RateModal";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import useSearchParams from "@/hooks/useSearchParams";
 import { Message, useChat } from "ai/react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { githubGist } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 import { realtime } from "@/utils/altogic";
-import { useThrottle } from "@uidotdev/usehooks";
 import Hero from "@/components/Hero";
 import NoCredits from "@/components/NoCredits";
 import { ProjectHistory } from "@/types";
 import History from "@/components/History";
 import FirstPrompt from "@/components/FirstPrompt";
 import Frame from "react-frame-component";
+import { useRouter } from "next/navigation";
 
 const theme = githubGist;
 const exampleText = "A login form";
 
 export default function Generate(props: { reset: () => void }) {
   const { user, setUser } = useAuth();
-  const { set } = useSearchParams();
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { replace } = useRouter();
+  const { set, get, has, deleteByKey } = useSearchParams();
   const [hasNoCreditsError, setHasNoCreditsError] = useState(false);
   const [firstPrompt, setFirstPrompt] = useState<null | string>(null);
   const [codeViewActive, setCodeViewActive] = useState(false);
@@ -43,7 +44,25 @@ export default function Generate(props: { reset: () => void }) {
   const [projectId, setProjectId] = useState<string>();
   const [subProjectId, setSubProjectId] = useState<string>();
   const [projects, setProjects] = useState<ProjectHistory[]>([]);
-  const throttledContent = useThrottle(iframeContent, 500);
+  const selected = Number(get("selected") ?? 0);
+  const [copied, setCopied] = useState(false);
+
+  async function share() {
+    try {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/projects/${projectId}?selected=${selected}`,
+      );
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      alert("Failed to copy URL to clipboard");
+      setCopied(false);
+    }
+  }
+
+  useEffect(() => {
+    console.log("selected", selected);
+  }, [selected]);
 
   const {
     messages,
@@ -75,6 +94,7 @@ export default function Generate(props: { reset: () => void }) {
   const projectIdCallback = ({ message }: any) => {
     setProjectId(message.id);
     sessionStorage.setItem("projectId", message.id);
+    console.log("projectId", message.id);
     setProjects((prev) => {
       return [
         ...prev,
@@ -90,6 +110,8 @@ export default function Generate(props: { reset: () => void }) {
 
   const subProjectIdCallback = ({ message }: any) => {
     setSubProjectId(message.id);
+    sessionStorage.setItem("subProjectId", message.id);
+    console.log("subProjectId", message.id);
     setProjects((prev) => {
       return [
         ...prev,
@@ -101,13 +123,13 @@ export default function Generate(props: { reset: () => void }) {
         },
       ];
     });
-    sessionStorage.setItem("subProjectId", message.id);
   };
 
   useEffect(() => {
     const roomId = nanoid();
     setNanoId(roomId);
     realtime.join(roomId);
+    sessionStorage.clear();
 
     realtime.on("projectId", projectIdCallback);
     realtime.on("subProjectId", subProjectIdCallback);
@@ -125,16 +147,14 @@ export default function Generate(props: { reset: () => void }) {
     const type = subProjectId ? "sub-project" : "project";
     const id = subProjectId ?? projectId;
 
-    if (!id) {
-      return alert("Your result could not be saved. Please try again.");
-    }
+    if (!id) return;
 
     await updateProject({ result }, id, type);
 
     setProjects((prev) => {
       return prev.map((sb) => {
         if (sb.id === id) {
-          return { ...sb, ready: true };
+          return { ...sb, ready: true, result };
         }
         return sb;
       });
@@ -237,12 +257,28 @@ export default function Generate(props: { reset: () => void }) {
         className="py-1 px-3 h-[34px] gap-2"
         onClick={() => {
           sessionStorage.clear();
+          deleteByKey("selected");
           props.reset();
         }}
       >
         New
         <Plus className="h-5 w-5" />
       </Button>
+      {projects.some((p) => p.ready) && (
+        <Button className="py-1 px-3 h-[34px] gap-2" onClick={share}>
+          {copied ? (
+            <>
+              Copied
+              <Check className="h-5 w-5" />
+            </>
+          ) : (
+            <>
+              Share
+              <Share className="h-5 w-5" />
+            </>
+          )}
+        </Button>
+      )}
       <Button
         className="py-1 px-3 h-[34px] gap-2"
         onClick={() => setCodeViewActive(!codeViewActive)}
@@ -264,6 +300,16 @@ export default function Generate(props: { reset: () => void }) {
       </Button>
     </div>
   );
+
+  const selectedComponent: {
+    id?: string;
+    result?: string;
+    url?: string;
+  } = {
+    url: selected === 0 ? "/api/preview/" : `/api/preview/sub/`,
+    id: projects[selected]?.id,
+    result: projects[selected]?.result,
+  };
 
   return (
     <>
@@ -300,7 +346,9 @@ export default function Generate(props: { reset: () => void }) {
                     showLineNumbers
                     className={cn(codeViewActive ? "!block" : "!hidden")}
                   >
-                    {iframeContent}
+                    {has("selected")
+                      ? (selectedComponent.result as string)
+                      : iframeContent}
                   </SyntaxHighlighter>
                   <Frame
                     sandbox="allow-same-origin allow-scripts"
@@ -324,14 +372,19 @@ export default function Generate(props: { reset: () => void }) {
                   >
                     <div
                       dangerouslySetInnerHTML={{
-                        __html: iframeContent,
+                        __html: has("selected")
+                          ? (selectedComponent.result as string)
+                          : iframeContent,
                       }}
                     ></div>
                   </Frame>
                 </BrowserWindow>
                 {Form}
               </div>
-              <History projects={projects} />
+              <History
+                onClick={(index) => replace(`?selected=${index}`)}
+                projects={projects}
+              />
             </div>
           </section>
         )}

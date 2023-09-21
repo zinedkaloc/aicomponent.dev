@@ -41,6 +41,9 @@ export async function POST(req: Request) {
     { id: _id, prompt: content },
   );
 
+  console.info("key", !rest.projectId ? "projectId" : "subProjectId");
+  console.info("message", { id: _id, prompt: content });
+
   if (credits === 0) {
     return NextResponse.json({ code: "no-credits", credits });
   }

@@ -4,11 +4,7 @@ import fetchSubProjectByParentId, {
 } from "@/utils/auth";
 import { SetProjects } from "@/hooks/useProjectList";
 import { SetProject } from "@/hooks/useProject";
-import dynamic from "next/dynamic";
-
-const ProjectDesign = dynamic(() => import("@/components/ProjectDesign"), {
-  ssr: false,
-});
+import ProjectDesign from "@/components/ProjectDesign";
 
 export default async function ProjectDetail({
   params,

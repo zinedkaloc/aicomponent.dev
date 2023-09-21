@@ -10,8 +10,14 @@ import { cn } from "@/utils/helpers";
 interface HistoryProps {
   projects: ProjectHistory[];
   className?: string;
+  onClick?: (index: number) => void;
 }
-export default function History({ projects, className }: HistoryProps) {
+export default function History({
+  projects,
+  onClick,
+  className,
+}: HistoryProps) {
+  const Component = onClick ? "button" : "a";
   return (
     <div
       className={cn(
@@ -25,9 +31,12 @@ export default function History({ projects, className }: HistoryProps) {
           <TooltipProvider key={i}>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <a
+                <Component
+                  onClick={() => onClick?.(i)}
                   href={
-                    project.isSubProject
+                    onClick
+                      ? undefined
+                      : project.isSubProject
                       ? `/api/preview/sub/${project.id}`
                       : `/api/preview/${project.id}`
                   }
@@ -54,7 +63,7 @@ export default function History({ projects, className }: HistoryProps) {
                       />
                     </div>
                   </div>
-                </a>
+                </Component>
               </TooltipTrigger>
               <TooltipContent side="left">{project.prompt}</TooltipContent>
             </Tooltip>

@@ -8,6 +8,7 @@ export type ProjectHistory = {
   id: string;
   prompt: string;
   ready: boolean;
+  result?: string;
   isSubProject: boolean;
 };
 export interface Product {

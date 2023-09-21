@@ -82,11 +82,6 @@ export async function deleteUser() {
 }
 
 export function logout(req: Request, nextResponse: typeof NextResponse) {
-  /*altogic.auth
-    .signOut(token?.value)
-    .then(console.log)
-    .catch(console.error);*/
-
   const destinationUrl = new URL("/", new URL(req.url).origin);
   const response = nextResponse.redirect(destinationUrl);
   response.cookies.delete("sessionToken");
@@ -94,8 +89,11 @@ export function logout(req: Request, nextResponse: typeof NextResponse) {
 }
 
 export async function fetchProjects(): Promise<Project[] | null> {
+  const token = getSessionCookie();
+  if (!token) return null;
+
   const { data, errors } = await altogic.endpoint.get("/projects", undefined, {
-    Session: getSessionCookie(),
+    Session: token,
   });
   if (errors) {
     console.log(JSON.stringify(errors, null, 4));
@@ -114,9 +112,6 @@ export async function fetchProjectById(
   const { data, errors } = await altogic.endpoint.get(
     type === "project" ? `/project/${id}` : `/sub-project/${id}`,
     undefined,
-    {
-      Session: getSessionCookie(),
-    },
   );
   if (errors) {
     console.log(JSON.stringify(errors, null, 4));

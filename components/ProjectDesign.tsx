@@ -2,15 +2,22 @@
 
 import { Project, ProjectHistory } from "@/types";
 import BrowserWindow from "@/components/BrowserWindow";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "@/components/Button";
-import { Code2, Download, MonitorSmartphone, Plus } from "lucide-react";
+import {
+  Check,
+  Code2,
+  Download,
+  MonitorSmartphone,
+  Plus,
+  Share,
+} from "lucide-react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { githubGist } from "react-syntax-highlighter/dist/cjs/styles/hljs";
-import { downloadHTML, initialIframeContent } from "@/utils/helpers";
+import { cn, downloadHTML, initialIframeContent } from "@/utils/helpers";
 import History from "@/components/History";
 import FirstPrompt from "@/components/FirstPrompt";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface ProjectDesignProps {
   project: Project;
@@ -20,6 +27,22 @@ interface ProjectDesignProps {
 export default function ProjectDesign(props: ProjectDesignProps) {
   const { push } = useRouter();
   const [codeViewActive, setCodeViewActive] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const searchParams = useSearchParams();
+  const selected = +(searchParams.get("selected") ?? 0);
+
+  async function share() {
+    const url = new URL(window.location.href);
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      alert("Failed to copy URL to clipboard");
+      setCopied(false);
+    }
+  }
+
   const HeaderButtons = (
     <div className="flex gap-2 items-center">
       <Button
@@ -31,6 +54,19 @@ export default function ProjectDesign(props: ProjectDesignProps) {
       >
         New
         <Plus className="h-5 w-5" />
+      </Button>
+      <Button className="py-1 px-3 h-[34px] gap-2" onClick={share}>
+        {copied ? (
+          <>
+            Copied
+            <Check className="h-5 w-5" />
+          </>
+        ) : (
+          <>
+            Share
+            <Share className="h-5 w-5" />
+          </>
+        )}
       </Button>
       <Button
         onClick={() => setCodeViewActive(!codeViewActive)}
@@ -74,6 +110,22 @@ export default function ProjectDesign(props: ProjectDesignProps) {
     ...subHistory,
   ];
 
+  const selectedComponent: {
+    id?: string;
+    result?: string;
+    url?: string;
+  } = {
+    url: selected === 0 ? "/api/preview/" : `/api/preview/sub/`,
+    id:
+      selected === 0
+        ? props.project._id
+        : props.subProjects?.[selected - 1]._id,
+    result:
+      selected === 0
+        ? props.project.result
+        : props.subProjects?.[selected - 1].result,
+  };
+
   return (
     <div className="space-y-2 w-full">
       <FirstPrompt firstPrompt={props.project.content} />
@@ -85,26 +137,29 @@ export default function ProjectDesign(props: ProjectDesignProps) {
             className="h-[calc(100vh-160px)]"
             header={HeaderButtons}
           >
-            {codeViewActive ? (
+            {selectedComponent.result && (
               <SyntaxHighlighter
                 language="htmlbars"
                 style={githubGist}
                 showLineNumbers
                 wrapLines
                 wrapLongLines
+                className={cn(!codeViewActive && "!hidden")}
               >
-                {props.project.result}
+                {selectedComponent.result}
               </SyntaxHighlighter>
-            ) : (
-              <iframe
-                loading="lazy"
-                srcDoc={props.project.result}
-                className="w-full h-full"
-              />
             )}
+            <iframe
+              loading="lazy"
+              className={cn("w-full h-full", codeViewActive && "hidden")}
+              src={`${selectedComponent.url}/${selectedComponent.id}`}
+            />
           </BrowserWindow>
         </div>
-        <History projects={history} />
+        <History
+          onClick={(index) => push(`?selected=${index}`)}
+          projects={history}
+        />
       </div>
     </div>
   );

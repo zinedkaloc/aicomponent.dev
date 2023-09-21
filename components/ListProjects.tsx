@@ -41,7 +41,7 @@ function ProjectItem({ project }: { project: Project }) {
     <Link
       key={project._id}
       className="flex group h-full flex-col relative overflow-hidden rounded-lg border bg-white transition-all"
-      href={`/profile/projects/${project._id}`}
+      href={`/projects/${project._id}`}
       onClick={() => setProject(project)}
     >
       <div
