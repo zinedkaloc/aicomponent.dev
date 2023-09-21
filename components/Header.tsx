@@ -56,14 +56,6 @@ export default function Header() {
               </button>
             </div>
           )}
-          <a
-            href="https://twitter.com/aipagedev"
-            className="hidden sm:flex items-center text-gray-900 hover:text-blue-500 transition-colors"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <TwitterLogo className="h-5 w-5 fill-current" />
-          </a>
           {user && (
             <Button
               className="auth-btn hidden sm:block"
