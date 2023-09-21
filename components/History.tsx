@@ -6,6 +6,7 @@ import {
 } from "@/components/Tooltip";
 import { ProjectHistory } from "@/types";
 import { cn } from "@/utils/helpers";
+import { useSearchParams } from "next/navigation";
 
 interface HistoryProps {
   projects: ProjectHistory[];
@@ -18,6 +19,8 @@ export default function History({
   className,
 }: HistoryProps) {
   const Component = onClick ? "button" : "a";
+  const searchParams = useSearchParams();
+
   return (
     <div
       className={cn(
@@ -41,9 +44,17 @@ export default function History({
                       : `/api/preview/${project.id}`
                   }
                   target="_blank"
-                  className="flex w-[200px] lg:w-full shrink-0 z-10 cursor-pointer relative"
+                  className={cn(
+                    "flex w-[200px] lg:w-full shrink-0 z-10 cursor-pointer relative",
+                  )}
                 >
-                  <div className="aspect-video w-full rounded-xl border overflow-hidden shadow-sm transition-colors [&_iframe]:hover:!opacity-100  hover:border-border">
+                  <div
+                    className={cn(
+                      "aspect-video w-full rounded-xl border overflow-hidden shadow-sm transition-colors [&_iframe]:hover:!opacity-100 hover:border-border",
+                      Number(searchParams.get("selected") ?? 0) === i &&
+                        "border-black",
+                    )}
+                  >
                     <div className="relative w-full h-full overflow-hidden pointer-events-none">
                       <div className="absolute w-full h-full bg-transparent z-10" />
                       <iframe
