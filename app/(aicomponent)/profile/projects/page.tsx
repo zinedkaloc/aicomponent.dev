@@ -11,7 +11,7 @@ export default async function ProfileProjects() {
   const hasProjects = !!projects && projects.length > 0;
 
   return (
-    <div className="w-full px-6 py-6 bg-gray-50 h-full flex-1 flex flex-col">
+    <div className="w-full px-6 py-6 h-full flex-1 flex flex-col">
       <div
         className={cn(
           "mx-auto w-full sm:max-w-screen-2xl sm:px-2.5 lg:px-20",

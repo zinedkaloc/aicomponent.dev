@@ -3,6 +3,15 @@ import { twMerge } from "tailwind-merge";
 import { Project } from "@/types";
 import { customAlphabet } from "nanoid";
 
+export const initialIframeContent = `
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> 
+<script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/tailwind.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script> 
+<script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+`;
+
 export const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
   7,
@@ -45,18 +54,21 @@ export function toReversed<T>(arr: T[]) {
 
 export async function updateProject(
   data: Omit<Partial<Project>, "_id">,
-  id?: string,
+  _id: string,
+  type: "project" | "sub-project" = "project",
 ) {
-  const body = {
+  const body = JSON.stringify({
     ...data,
-    ...(id && { _id: id }),
-  };
-  const res = await fetch("/api/message", {
+    _id,
+    type,
+  });
+
+  const res = await fetch(`/api/message`, {
     headers: {
       "Content-Type": "application/json",
     },
     method: "PUT",
-    body: JSON.stringify(body),
+    body,
   });
 
   return res.json();

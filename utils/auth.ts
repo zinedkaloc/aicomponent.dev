@@ -2,6 +2,7 @@ import { cookies, headers } from "next/headers";
 import { Invoice, Product, Project, User } from "@/types";
 import altogic from "@/utils/altogic";
 import { NextResponse } from "next/server";
+import { APIError } from "altogic";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -103,12 +104,15 @@ export async function fetchProjects(): Promise<Project[] | null> {
   return data.result;
 }
 
-export async function fetchProjectById(id: string): Promise<Project | null> {
+export async function fetchProjectById(
+  id: string,
+  type: "project" | "sub-project" = "project",
+): Promise<Project | null> {
   const regex = /^[a-fA-F0-9]{24}$/g; // mongo id regex
   if (!regex.test(id)) return null;
 
   const { data, errors } = await altogic.endpoint.get(
-    "/project/" + id,
+    type === "project" ? `/project/${id}` : `/sub-project/${id}`,
     undefined,
     {
       Session: getSessionCookie(),
@@ -119,6 +123,25 @@ export async function fetchProjectById(id: string): Promise<Project | null> {
     return null;
   }
   return data as Project;
+}
+
+export default async function fetchSubProjectByParentId(id: string) {
+  // @ts-ignore
+  altogic.auth.setSession({
+    token: getSessionCookie() as string,
+  });
+
+  const { data, errors } = await altogic.db
+    .model("subProjects")
+    .filter(`parent == '${id}'`)
+    .get();
+
+  if (!data) {
+    console.log(JSON.stringify(errors, null, 4));
+    return null;
+  }
+
+  return data as Project[];
 }
 
 export async function updateProjectName(id: string, name: string) {

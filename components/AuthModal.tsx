@@ -33,7 +33,12 @@ export default function AuthModal() {
   }
 
   return (
-    <Modal close={close} isOpen={has("authModal")} className="p-0">
+    <Modal
+      close={close}
+      isOpen={has("authModal")}
+      className="p-0"
+      parentClassName="px-4"
+    >
       <div className="flex flex-col items-center justify-center space-y-3 border-b border-gray-200 bg-white px-4 py-6 pt-8 text-center sm:px-10">
         <Link href="/">
           <Image
@@ -45,7 +50,7 @@ export default function AuthModal() {
             className="mx-auto h-24 w-24"
           />
         </Link>
-        <h3 className="text-xl font-semibold">Sign in to AIPage</h3>
+        <h3 className="text-xl font-semibold">Sign in to AIComponent</h3>
         <p className="text-sm text-gray-500">
           Powered by AI, Perfected for You
         </p>

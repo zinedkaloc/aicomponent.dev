@@ -7,6 +7,7 @@ import LoadingSpinner from "@/components/loadingSpinner";
 import { Project } from "@/types";
 import { useRouter } from "next/navigation";
 import useProjectList from "@/hooks/useProjectList";
+import { Trash } from "lucide-react";
 
 export default function DeleteProjectConfirmDialog({
   project,
@@ -14,7 +15,7 @@ export default function DeleteProjectConfirmDialog({
   project: Project | null;
 }) {
   const [deleting, setDeleting] = useState(false);
-  const { push, prefetch, refresh } = useRouter();
+  const { refresh } = useRouter();
   const { deleteProject } = useProjectList();
 
   async function deleteProjectHandler() {
@@ -28,7 +29,6 @@ export default function DeleteProjectConfirmDialog({
     if (!errors) {
       deleteProject(project._id);
       refresh();
-      push("/profile/projects");
     } else setDeleting(false);
   }
 
@@ -36,9 +36,17 @@ export default function DeleteProjectConfirmDialog({
     <ConfirmDialog
       text="confirm delete project"
       trigger={
-        <Button variant="danger" disabled={deleting} type="button">
-          {deleting && <LoadingSpinner />}
-          <p>Delete project</p>
+        <Button
+          variant="danger"
+          className="px-2"
+          disabled={deleting}
+          type="button"
+        >
+          {deleting ? (
+            <LoadingSpinner className="w-4 h-4" />
+          ) : (
+            <Trash className="h-4 w-4" />
+          )}
         </Button>
       }
       onConfirm={deleteProjectHandler}

@@ -37,7 +37,7 @@ export default function Product({ product, className }: ProductProps) {
     <div
       className={cn(
         "border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200",
-        className
+        className,
       )}
     >
       <div className="flex h-72 gap-5 flex-col">
@@ -57,7 +57,7 @@ export default function Product({ product, className }: ProductProps) {
         <div className="flex-1 flex flex-col">
           <div className="flex w-full h-14 items-center justify-center border-b border-t border-gray-200 bg-gray-50">
             <p className="text-gray-600 text-xs text-center">
-              {product.metadata.info}
+              {product.metadata.info.replace("landing pages", "components")}
             </p>
           </div>
           <div className="px-4 flex-1 flex items-center w-full justify-center">

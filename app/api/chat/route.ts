@@ -4,6 +4,8 @@ import { OpenAIStream, StreamingTextResponse } from "ai";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import altogic from "@/utils/altogic";
+import { getSessionCookie } from "@/utils/auth";
+import { Project } from "@/types";
 
 const config = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -14,36 +16,33 @@ const openai = new OpenAIApi(config);
 export const runtime = "edge";
 
 export async function POST(req: Request) {
-  const cookieStore = cookies();
+  const sessionToken = getSessionCookie();
+  if (!sessionToken)
+    return NextResponse.json({ code: "unauthorized" }, { status: 401 });
 
   const { messages, ...rest } = await req.json();
-
-  const sessionToken = cookieStore.get("sessionToken")?.value as string;
 
   // @ts-ignore
   altogic.auth.setSession({
     token: sessionToken,
   });
 
-  if (!rest.projectId) {
-    const storeMessage = await fetch(
-      `${process.env.NEXT_PUBLIC_ALTOGIC_API_BASE_URL}/test`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Session: sessionToken,
-        },
-        body: JSON.stringify({ content: messages[0].content }),
-      },
-    );
+  const { content } = messages
+    .filter((m: { role: string }) => m.role === "user")
+    .at(-1);
 
-    const { credits, _id } = await storeMessage.json();
-    altogic.realtime.send(rest.channelId, "projectId", { projectId: _id });
+  const {
+    data: { credits, _id },
+  } = await storeMessage({ content }, rest.projectId);
 
-    if (credits === 0) {
-      return NextResponse.json({ code: "no-credits", credits });
-    }
+  altogic.realtime.send(
+    rest.channelId,
+    !rest.projectId ? "projectId" : "subProjectId",
+    { id: _id, prompt: content },
+  );
+
+  if (credits === 0) {
+    return NextResponse.json({ code: "no-credits", credits });
   }
 
   const systemPrompt = `You've been entrusted as the lead designer to architect a striking and engaging design system using Tailwind CSS and Alpine.js for a state-of-the-art application. The goal is to build a design system that ensures rapid and consistent development of UI components for our application, captivating users with their visual appeal and functionality.
@@ -88,8 +87,27 @@ Don't give any descriptive text. Start with <!DOCTYPE html> and end with </html>
   });
 
   stream = OpenAIStream(response);
-  // Continue generating the response if incomplete
-
-  // If rate limited, return a fake response
   return new StreamingTextResponse(stream);
+}
+
+async function storeMessage(data: { content: string }, parentId?: string) {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_ALTOGIC_API_BASE_URL}/projects`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Session: getSessionCookie() as string,
+        },
+        body: JSON.stringify({ ...data, parentId }),
+      },
+    );
+
+    return { data: await response.json() };
+  } catch (error) {
+    return {
+      error,
+    };
+  }
 }

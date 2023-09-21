@@ -4,6 +4,12 @@ export interface User extends AltogicUser {
   credits: number;
 }
 
+export type ProjectHistory = {
+  id: string;
+  prompt: string;
+  ready: boolean;
+  isSubProject: boolean;
+};
 export interface Product {
   id: string;
   object: string;

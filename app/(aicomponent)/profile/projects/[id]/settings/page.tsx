@@ -1,7 +1,7 @@
 "use client";
 
 import useProject from "@/hooks/useProject";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { cn, updateProject } from "@/utils/helpers";
 import NavLink from "@/components/NavLink";
 import Button from "@/components/Button";

@@ -1,4 +1,4 @@
-import { deleteProject, updateProjectName } from "@/utils/auth";
+import { updateProjectName } from "@/utils/auth";
 import { NextResponse } from "next/server";
 
 export async function PATCH(req: Request) {

@@ -4,6 +4,10 @@ interface HTMLPreviewProps {
 
 export default function HTMLPreview({ html }: HTMLPreviewProps) {
   return (
-    <iframe className="w-full min-h-screen cursor-pointer" srcDoc={html} />
+    <iframe
+      loading="lazy"
+      className="w-full min-h-screen cursor-pointer"
+      srcDoc={html}
+    />
   );
 }

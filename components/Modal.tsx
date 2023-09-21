@@ -7,12 +7,14 @@ interface ModalProps {
   isOpen: boolean;
   className?: string;
   children: ReactNode;
+  parentClassName?: string;
 }
 export default function Modal({
   close,
   children,
   isOpen,
   className,
+  parentClassName,
 }: ModalProps) {
   const modalWrapper = useRef<HTMLDivElement>(null);
   function modalWrapperClickHandler(event: MouseEvent) {
@@ -24,7 +26,10 @@ export default function Modal({
   return (
     <div
       ref={modalWrapper}
-      className="fixed modal inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-50"
+      className={cn(
+        "fixed modal inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-50",
+        parentClassName,
+      )}
       onClick={modalWrapperClickHandler}
     >
       <div

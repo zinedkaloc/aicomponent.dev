@@ -1,11 +1,35 @@
 "use client";
-import { useSearchParams as useNextSearchParams } from "next/navigation";
-import { usePathname, useRouter } from "next/navigation";
+import {
+  usePathname,
+  useRouter,
+  useSearchParams as useNextSearchParams,
+} from "next/navigation";
+import { useCallback } from "react";
 
 export default function useSearchParams() {
   const searchParams = useNextSearchParams();
   const router = useRouter();
   const path = usePathname();
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams],
+  );
+
+  const appendQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+      params.append(name, value);
+
+      return params.toString();
+    },
+    [searchParams],
+  );
 
   function getURL() {
     return new URL(path, window.location.origin);
@@ -16,9 +40,11 @@ export default function useSearchParams() {
   }
 
   function set(key: string, value: string) {
-    const params = getURL();
-    params.searchParams.set(key, value);
-    router.push(params.toString());
+    router.push(path + "?" + createQueryString(key, value));
+  }
+
+  function append(key: string, value: string) {
+    router.push(path + "?" + appendQueryString(key, value));
   }
 
   function deleteByKey(key: string) {
@@ -33,6 +59,7 @@ export default function useSearchParams() {
 
   return {
     set,
+    append,
     has,
     get,
     deleteByKey,

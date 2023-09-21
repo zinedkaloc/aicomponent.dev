@@ -1,4 +1,7 @@
-import { fetchProjectById, fetchProjects } from "@/utils/auth";
+import fetchSubProjectByParentId, {
+  fetchProjectById,
+  fetchProjects,
+} from "@/utils/auth";
 import { SetProjects } from "@/hooks/useProjectList";
 import { SetProject } from "@/hooks/useProject";
 import dynamic from "next/dynamic";
@@ -14,21 +17,19 @@ export default async function ProjectDetail({
 }) {
   const projects = await fetchProjects();
   const project = await fetchProjectById(params.id);
+  const subProjects = await fetchSubProjectByParentId(params.id);
+
   return (
-    <div className="mx-auto project-detail-page grid flex-1 w-full max-w-screen-2xl py-4 sm:py-6 px-2.5 lg:px-20">
+    <div className="flex flex-col w-full min-h-[calc(100vh-72px)] items-center px-4 md:px-16 lg:px-24 pt-6">
       <SetProjects projects={projects ?? []} />
       <SetProject project={project ?? null} />
-      <div className="h-full flex-1 grid">
-        <div className="flex-1">
-          {project?.result ? (
-            <ProjectDesign project={project} />
-          ) : (
-            <div className="flex-1 h-full flex items-center justify-center text-gray-400">
-              No HTML to display
-            </div>
-          )}
+      {project?.result ? (
+        <ProjectDesign project={project} subProjects={subProjects} />
+      ) : (
+        <div className="flex-1 h-full flex items-center justify-center text-gray-400">
+          No HTML to display
         </div>
-      </div>
+      )}
     </div>
   );
 }

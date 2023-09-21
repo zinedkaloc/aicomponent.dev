@@ -6,12 +6,17 @@ import { usePathname } from "next/navigation";
 import useProjectList from "@/hooks/useProjectList";
 import useProject from "@/hooks/useProject";
 import { useEffect } from "react";
+import { cn } from "@/utils/helpers";
 
-export default function ProjectSelect() {
+interface ProjectSelectProps {
+  className?: string;
+}
+
+export default function ProjectSelect(props: ProjectSelectProps) {
   const { project } = useProject();
 
   return (
-    <div>
+    <div className={cn(props.className)}>
       <Popover content={<ProjectList />}>
         <button className="flex items-center justify-between rounded-lg bg-white p-1.5 text-left text-sm transition-all duration-75 hover:bg-gray-100 focus:outline-none active:bg-gray-200">
           <div className="flex items-center space-x-3 pr-2">

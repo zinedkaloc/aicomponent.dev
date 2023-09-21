@@ -9,10 +9,10 @@ export default function Logo({ href }: LogoProps) {
   return (
     <Component
       href={href as string}
-      className="flex items-center tracking-tight"
+      className="flex items-center tracking-tight text-lg sm:text-xl"
     >
-      <strong className="font-bold text-xl">ai</strong>
-      <span className="text-xl">component.dev</span>
+      <strong className="font-bold">ai</strong>
+      <span>component.dev</span>
     </Component>
   );
 }
