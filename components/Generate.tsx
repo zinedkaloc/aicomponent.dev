@@ -13,7 +13,7 @@ import {
   Share,
 } from "lucide-react";
 import RateModal from "@/components/RateModal";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import useSearchParams from "@/hooks/useSearchParams";
 import { Message, useChat } from "ai/react";
@@ -301,15 +301,13 @@ export default function Generate(props: { reset: () => void }) {
     </div>
   );
 
-  const selectedComponent: {
-    id?: string;
-    result?: string;
-    url?: string;
-  } = {
-    url: selected === 0 ? "/api/preview/" : `/api/preview/sub/`,
-    id: projects[selected]?.id,
-    result: projects[selected]?.result,
-  };
+  const selectedComponent = useMemo(() => {
+    return {
+      url: selected === 0 ? "/api/preview/" : `/api/preview/sub/`,
+      id: projects[selected]?.id,
+      result: projects[selected]?.result,
+    };
+  }, [projects, selected]);
 
   return (
     <>
@@ -352,19 +350,7 @@ export default function Generate(props: { reset: () => void }) {
                   </SyntaxHighlighter>
                   <Frame
                     sandbox="allow-same-origin allow-scripts"
-                    initialContent={`<!DOCTYPE html><html><head>
-              <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> 
-            <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script>
-            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/tailwind.min.css" rel="stylesheet">
-            <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script> 
-            <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> 
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-            </head>
-            <body>
-            <div id="root"></div>
-            </body>
-                      </html>
-                    `}
+                    initialContent={`<!DOCTYPE html><html><head> <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/tailwind.min.css" rel="stylesheet"> <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script> <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> </head> <body> <div id="root"></div> </body> </html>`}
                     className={cn(
                       "w-full h-full",
                       !codeViewActive ? "block" : "hidden",

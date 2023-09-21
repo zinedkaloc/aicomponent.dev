@@ -3,7 +3,7 @@ import { Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import altogic from "@/utils/altogic";
+import altogic, { getServerRealtime } from "@/utils/altogic";
 import { getSessionCookie } from "@/utils/auth";
 import { Project } from "@/types";
 
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     data: { credits, _id },
   } = await storeMessage({ content }, rest.projectId);
 
-  altogic.realtime.send(
+  getServerRealtime(sessionToken).send(
     rest.channelId,
     !rest.projectId ? "projectId" : "subProjectId",
     { id: _id, prompt: content },

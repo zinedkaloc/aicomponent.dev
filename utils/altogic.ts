@@ -13,6 +13,17 @@ const altogic = createClient(apiBaseURL, clientKey, {
   signInRedirect: "/",
 });
 
+export default altogic;
+
+export const getServerRealtime = (token: string) => {
+  const altogic = createClient(apiBaseURL, clientKey);
+  // @ts-ignore
+  altogic.auth.setSession({
+    token,
+  });
+  return altogic.realtime;
+};
+
 const realTimeToken = process.env.NEXT_PUBLIC_REALTIME_TOKEN;
 
 if (!realTimeToken) {
@@ -24,5 +35,3 @@ if (!realTimeToken) {
 const altogicClient = createClient(apiBaseURL, realTimeToken);
 
 export const realtime = altogicClient.realtime;
-
-export default altogic;
