@@ -85,7 +85,13 @@ export default function ProjectDesign(props: ProjectDesignProps) {
         )}
       </Button>
       <Button
-        onClick={() => downloadHTML(props.project.result)}
+        onClick={() => {
+          const content =
+            selected === 0
+              ? props.project.result
+              : props.subProjects?.[selected - 1].result;
+          if (content) downloadHTML(content);
+        }}
         className="p-1 gap-2 h-[34px] aspect-square"
       >
         <Download className="h-5 w-5" />
