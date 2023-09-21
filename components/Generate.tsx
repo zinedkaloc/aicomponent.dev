@@ -211,6 +211,7 @@ export default function Generate(props: { reset: () => void }) {
     <form
       onSubmit={(e) => {
         handleSubmit(e);
+        deleteByKey("selected");
         if (!firstPrompt) setFirstPrompt(input);
       }}
       className={cn(
