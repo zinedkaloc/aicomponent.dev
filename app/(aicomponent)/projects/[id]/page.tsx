@@ -16,7 +16,7 @@ export default async function ProjectDetail({
   const subProjects = await fetchSubProjectByParentId(params.id);
 
   return (
-    <div className="flex flex-col w-full min-h-[calc(100vh-72px)] items-center px-4 md:px-16 lg:px-24 pt-6">
+    <div className="flex flex-col w-full min-h-[calc(100vh-72px)] items-center px-4 md:px-14 pt-6">
       <SetProjects projects={projects ?? []} />
       <SetProject project={project ?? null} />
       {project?.result ? (

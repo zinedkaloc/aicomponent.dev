@@ -35,6 +35,7 @@ export default function Generate(props: { reset: () => void }) {
   const { user, setUser } = useAuth();
   const { replace } = useRouter();
   const { set, get, has, deleteByKey } = useSearchParams();
+
   const [hasNoCreditsError, setHasNoCreditsError] = useState(false);
   const [firstPrompt, setFirstPrompt] = useState<null | string>(null);
   const [codeViewActive, setCodeViewActive] = useState(false);
@@ -44,25 +45,9 @@ export default function Generate(props: { reset: () => void }) {
   const [projectId, setProjectId] = useState<string>();
   const [subProjectId, setSubProjectId] = useState<string>();
   const [projects, setProjects] = useState<ProjectHistory[]>([]);
-  const selected = Number(get("selected") ?? 0);
   const [copied, setCopied] = useState(false);
 
-  async function share() {
-    try {
-      await navigator.clipboard.writeText(
-        `${window.location.origin}/projects/${projectId}?selected=${selected}`,
-      );
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      alert("Failed to copy URL to clipboard");
-      setCopied(false);
-    }
-  }
-
-  useEffect(() => {
-    console.log("selected", selected);
-  }, [selected]);
+  const selected = Number(get("selected") ?? 0);
 
   const {
     messages,
@@ -91,10 +76,22 @@ export default function Generate(props: { reset: () => void }) {
     },
   });
 
+  async function share() {
+    try {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/projects/${projectId}?selected=${selected}`,
+      );
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      alert("Failed to copy URL to clipboard");
+      setCopied(false);
+    }
+  }
+
   const projectIdCallback = ({ message }: any) => {
     setProjectId(message.id);
     sessionStorage.setItem("projectId", message.id);
-    console.log("projectId", message.id);
     setProjects((prev) => {
       return [
         ...prev,
@@ -111,7 +108,6 @@ export default function Generate(props: { reset: () => void }) {
   const subProjectIdCallback = ({ message }: any) => {
     setSubProjectId(message.id);
     sessionStorage.setItem("subProjectId", message.id);
-    console.log("subProjectId", message.id);
     setProjects((prev) => {
       return [
         ...prev,
@@ -140,6 +136,17 @@ export default function Generate(props: { reset: () => void }) {
     };
   }, []);
 
+  useEffect(() => {
+    const lastProject = projects[projects.length - 1];
+    if (!lastProject || !lastProject?.ready) return;
+
+    setTimeout(() => {
+      const params = new URLSearchParams(window.location.search);
+      params.set("selected", `${projects.length - 1}`);
+      replace(`?${params.toString()}`);
+    }, 1000);
+  }, [projects]);
+
   const saveResult = async (result: string) => {
     const projectId = sessionStorage.getItem("projectId");
     const subProjectId = sessionStorage.getItem("subProjectId");
@@ -152,7 +159,7 @@ export default function Generate(props: { reset: () => void }) {
     await updateProject({ result }, id, type);
 
     setProjects((prev) => {
-      return prev.map((sb) => {
+      return prev.map((sb, index) => {
         if (sb.id === id) {
           return { ...sb, ready: true, result };
         }
@@ -161,7 +168,9 @@ export default function Generate(props: { reset: () => void }) {
     });
 
     if (!showedRatingModal) {
-      set("rateModal", "true");
+      const params = new URLSearchParams(window.location.search);
+      params.set("rateModal", "true");
+      replace(`?${params.toString()}`);
       setShowedRatingModal(true);
     }
   };
@@ -316,7 +325,7 @@ export default function Generate(props: { reset: () => void }) {
         className={cn(
           "flex flex-col w-full min-h-[calc(100vh-72px)]",
           "overflow-hidden items-center",
-          "px-4 md:px-16 lg:px-24 pt-6",
+          "px-4 md:px-14 pt-6",
         )}
       >
         {isLoading || firstPrompt ? null : <Hero />}
@@ -332,7 +341,7 @@ export default function Generate(props: { reset: () => void }) {
         {!hasNoCreditsError && iframeContent && (
           <section className="space-y-2 w-full">
             {firstPrompt && <FirstPrompt firstPrompt={firstPrompt} />}
-            <div className="w-full gap-4 grid lg:grid-cols-[200px_1fr_200px] lg:h-[calc(100vh-160px)] items-center">
+            <div className="w-full gap-4 grid lg:grid-cols-[300px_1fr_300px] lg:h-[calc(100vh-160px)] items-center">
               <div className="hidden lg:block" />
               <div className="w-full h-[calc(100vh-160px)] grid grid-rows-[1fr_auto] space-y-2.5">
                 <BrowserWindow
@@ -351,7 +360,8 @@ export default function Generate(props: { reset: () => void }) {
                   </SyntaxHighlighter>
                   <Frame
                     sandbox="allow-same-origin allow-scripts"
-                    initialContent={`<!DOCTYPE html><html><head> <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/tailwind.min.css" rel="stylesheet"> <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script> <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> </head> <body> <div id="root"></div> </body> </html>`}
+                    mountTarget="body"
+                    initialContent={`<!DOCTYPE html><html><head> <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/tailwind.min.css" rel="stylesheet"> <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script> <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> </head> <body></body> </html>`}
                     className={cn(
                       "w-full h-full",
                       !codeViewActive ? "block" : "hidden",
