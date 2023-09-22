@@ -20,15 +20,19 @@ export async function GET(req: NextRequest) {
   const { user, session } = await altogic.auth.getAuthGrant(accessToken);
 
   if (user) {
-    await fetch(`${process.env.NEXT_PUBLIC_ALTOGIC_API_BASE_URL}/credits`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_ALTOGIC_API_BASE_URL}/credits`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+        }),
       },
-      body: JSON.stringify({
-        email: user.email,
-      }),
-    });
+    );
+    if (res.ok) response.cookies.delete("freeCredits");
   }
 
   if (session) {
