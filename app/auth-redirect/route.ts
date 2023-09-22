@@ -6,11 +6,7 @@ export async function GET(req: NextRequest) {
   const accessToken = url.searchParams.get("access_token") as string;
   const status = url.searchParams.get("status");
   const isOk = status === "200";
-
   const freeCreditsCookie = req.cookies.get("freeCredits");
-  if (freeCreditsCookie && freeCreditsCookie.value === "25") {
-    console.log("freeCreditsCookie", freeCreditsCookie);
-  }
 
   const destinationUrl = new URL("/", new URL(req.url).origin);
   const response = NextResponse.redirect(destinationUrl, { status: 302 });
@@ -19,7 +15,7 @@ export async function GET(req: NextRequest) {
 
   const { user, session } = await altogic.auth.getAuthGrant(accessToken);
 
-  if (user) {
+  if (user && freeCreditsCookie && freeCreditsCookie.value === "25") {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_ALTOGIC_API_BASE_URL}/credits`,
       {
