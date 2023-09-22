@@ -6,7 +6,7 @@ import {
 } from "@/components/Tooltip";
 import { ProjectHistory } from "@/types";
 import { cn } from "@/utils/helpers";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useRef } from "react";
 import Skeleton from "@/components/Skeleton";
 
@@ -24,14 +24,17 @@ export default function History({
   const searchParams = useSearchParams();
 
   const historyRef = useRef<HTMLDivElement>(null);
+  const path = usePathname();
 
   useEffect(() => {
-    setTimeout(() => {
-      historyRef.current?.lastElementChild?.scrollIntoView({
-        behavior: "smooth",
-      });
-    }, 300);
-  }, [projects]);
+    if (path === "/") {
+      setTimeout(() => {
+        historyRef.current?.lastElementChild?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }, 300);
+    }
+  }, [projects, path]);
 
   return (
     <div

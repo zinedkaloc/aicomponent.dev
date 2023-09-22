@@ -5,7 +5,6 @@ import fetchSubProjectByParentId, {
 import { SetProjects } from "@/hooks/useProjectList";
 import { SetProject } from "@/hooks/useProject";
 import ProjectDesign from "@/components/ProjectDesign";
-import { ResolvingMetadata } from "next";
 
 type Props = {
   params: { id: string };
@@ -13,6 +12,7 @@ type Props = {
 };
 export async function generateMetadata({ params }: Props) {
   return {
+    // @ts-ignore
     images: `${process.env.NEXT_PUBLIC_DOMAIN}/api/og/${params.id}`,
   };
 }
