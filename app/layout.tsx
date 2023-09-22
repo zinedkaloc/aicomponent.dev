@@ -10,9 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    metadataBase: new URL(
-      process.env.NEXT_PUBLIC_DOMAIN ?? "http://localhost:3000",
-    ),
+    metadataBase: new URL("https://aicomponent.dev"),
     title: "AIComponent.dev - An AI-Powered Component Generator",
     description:
       "AI-Powered Component Generator. Experience the Open Source Project that Empowers You to Build Stunning Components Instantly",

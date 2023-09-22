@@ -12,9 +12,7 @@ type Props = {
 };
 export async function generateMetadata({ params }: Props) {
   return {
-    metadataBase: new URL(
-      process.env.NEXT_PUBLIC_DOMAIN ?? "http://localhost:3000",
-    ),
+    metadataBase: new URL("https://aicomponent.dev"),
     openGraph: {
       images: `/api/og/${params.id}`,
     },
