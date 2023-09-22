@@ -109,15 +109,17 @@ export async function fetchProjectById(
   const regex = /^[a-fA-F0-9]{24}$/g; // mongo id regex
   if (!regex.test(id)) return null;
 
-  const { data, errors } = await altogic.endpoint.get(
-    type === "project" ? `/project/${id}` : `/sub-project/${id}`,
-    undefined,
-  );
-  if (errors) {
-    console.log(JSON.stringify(errors, null, 4));
+  const path = type === "project" ? `/project/${id}` : `/sub-project/${id}`;
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_ALTOGIC_API_BASE_URL}/${path}`,
+    );
+    const data = await res.json();
+    return data as Project;
+  } catch {
     return null;
   }
-  return data as Project;
 }
 
 export default async function fetchSubProjectByParentId(id: string) {

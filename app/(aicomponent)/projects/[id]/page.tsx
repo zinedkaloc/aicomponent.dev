@@ -5,12 +5,19 @@ import fetchSubProjectByParentId, {
 import { SetProjects } from "@/hooks/useProjectList";
 import { SetProject } from "@/hooks/useProject";
 import ProjectDesign from "@/components/ProjectDesign";
+import { ResolvingMetadata } from "next";
 
-export default async function ProjectDetail({
-  params,
-}: {
+type Props = {
   params: { id: string };
-}) {
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+export async function generateMetadata({ params }: Props) {
+  return {
+    images: `${process.env.NEXT_PUBLIC_DOMAIN}/api/og/${params.id}`,
+  };
+}
+
+export default async function ProjectDetail({ params }: Props) {
   const projects = await fetchProjects();
   const project = await fetchProjectById(params.id);
   const subProjects = await fetchSubProjectByParentId(params.id);
