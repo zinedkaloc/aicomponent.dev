@@ -47,7 +47,8 @@ export async function GET(
             flexDirection: "column",
             flexWrap: "nowrap",
             backgroundColor: "transparent",
-            padding: "0 5px 20px 5px",
+            paddingLeft: "4rem",
+            paddingBottom: "4rem",
             backgroundImage:
               "radial-gradient(circle at 25px 25px, lightgray 2%, transparent 0%), radial-gradient(circle at 75px 75px, lightgray 2%, transparent 0%)",
             backgroundSize: "100px 100px",
@@ -58,8 +59,6 @@ export async function GET(
               display: "flex",
               color: "#fff",
               fontSize: "3.6rem",
-              justifyContent: "center",
-              textAlign: "center",
               width: "100%",
               WebkitBackgroundClip: "text",
             }}
