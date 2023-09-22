@@ -14,10 +14,6 @@ export default function Hero() {
         <h1 className="text-4xl sm:text-5xl font-bold text-ellipsis tracking-tight">
           Create components easily <span className="font-normal">with ai</span>
         </h1>
-        <p className="sm:text-lg text-gray-700 mt-4 tracking-tight">
-          Experience the future of web design. With ai, creating a component is
-          not only easy but also efficient, precise, and tailored to your needs.
-        </p>
       </div>
     </div>
   );
