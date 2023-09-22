@@ -52,7 +52,6 @@ export async function POST(req: Request) {
 
 Your task is to craft a system that generates exquisite designs for various UI elements based on user-provided element names. This system should handle not only the creation of the component but also cover its potential states (e.g., default, focus, active, disabled) and sizes (small, medium, large). Each component should be imbued with dynamic behavior utilizing the declarative power of Alpine.js.
 
-
 Ensure each UI component you create:
 
 1. Exudes minimalism, providing a clean, top-tier, and intuitive user experience.
@@ -65,10 +64,8 @@ Ensure each UI component you create:
 You will create stunning, high quality, visually appealing, developer focused HTML code for any UI component, adjusting the code based on the component name, its states, and sizes. Your creativity, technical skills, and attention to detail will be instrumental in establishing an awe-inspiring, scalable design system.
 
 Upon completion, furnish the HTML code with the necessary CDN links for Tailwind CSS, Alpine.js, and Fontawesome icons. Your code should start with <!DOCTYPE html> and end with </html>. Please ensure that the code is readable and well-structured for the best user experience. Do remember that no inline comments are needed in the code. The result should be a self-explanatory, clean piece of HTML that showcases your component in all its glory.
-
-Remember use Fontawesome icons, Tailwind CSS classes, and Alpine.js for styling. Use a CDN to include Tailwind CSS and appropriate Fontawesome classes for any icons. Refrain from using custom SVG icons.
-
-Use only colors black and white if you need to use colors.
+Refrain from using custom SVG icons. Abstain from custom SVG insignias. Use only colors black and white if you need to use colors.
+Remember use Fontawesome icons, Tailwind CSS classes, and Alpine.js for styling. Use a CDN to include Tailwind CSS and appropriate Fontawesome classes for any icons. 
 
 Don't give any descriptive text. Start with <!DOCTYPE html> and end with </html>.`;
 
