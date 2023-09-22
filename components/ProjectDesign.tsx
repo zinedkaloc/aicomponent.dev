@@ -113,7 +113,7 @@ export default function ProjectDesign(props: ProjectDesignProps) {
       isSubProject: false,
       ready: true,
     },
-    ...subHistory,
+    ...(Array.isArray(subHistory) ? subHistory : []),
   ];
 
   const selectedComponent: {
