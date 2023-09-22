@@ -55,6 +55,7 @@ export default function Generate(props: { reset: () => void }) {
     setInput,
     handleInputChange,
     handleSubmit,
+    stop,
     isLoading,
   } = useChat({
     body: {
@@ -260,9 +261,23 @@ export default function Generate(props: { reset: () => void }) {
     </form>
   );
 
+  function stopGeneration() {
+    const id = subProjectId ?? projectId;
+    stop();
+    setProjects((prev) => {
+      return prev.filter((p) => p.id !== id);
+    });
+  }
+
   const HeaderButtons = (
     <div className="flex gap-2 items-center">
-      <LoadingSpinner className={cn("mr-1", !isLoading && "opacity-0")} />
+      {isLoading && (
+        <Button onClick={stopGeneration} className="py-1 px-3 h-[34px] gap-2">
+          <LoadingSpinner className={cn("mr-1")} />
+          Stop Generation
+        </Button>
+      )}
+
       <Button
         className="py-1 px-3 h-[34px] gap-2"
         onClick={() => {
