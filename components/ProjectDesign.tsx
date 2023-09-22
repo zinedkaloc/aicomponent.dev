@@ -135,7 +135,7 @@ export default function ProjectDesign(props: ProjectDesignProps) {
   return (
     <div className="space-y-2 w-full">
       <FirstPrompt firstPrompt={props.project.content} />
-      <div className="w-full gap-4 grid lg:grid-cols-[200px_1fr_200px] lg:h-[calc(100vh-160px)] items-center">
+      <div className="w-full gap-4 grid lg:grid-cols-[300px_1fr_300px] lg:h-[calc(100vh-160px)] items-center">
         <div className="hidden lg:block" />
         <div className="w-full h-[calc(100vh-160px)]">
           <BrowserWindow

@@ -59,7 +59,7 @@ export default function History({
                       <div className="absolute w-full h-full bg-transparent z-10" />
                       <iframe
                         loading="lazy"
-                        className="absolute opacity-70 origin-top-left select-none overflow-hidden bg-white transition-opacity [transform:translateZ(1px)] [content-visibility:auto] w-full h-full pointer-events-none"
+                        className="absolute opacity-70 scale-[0.2] lg:scale-[0.3] origin-top-left select-none overflow-hidden bg-white transition-opacity [content-visibility:auto] w-full h-full pointer-events-none"
                         src={
                           project.isSubProject
                             ? `/api/preview/sub/${project.id}`
@@ -69,7 +69,6 @@ export default function History({
                         style={{
                           width: 1000,
                           height: 555,
-                          transform: "scale(0.2)",
                         }}
                       />
                     </div>
