@@ -12,8 +12,12 @@ type Props = {
 };
 export async function generateMetadata({ params }: Props) {
   return {
-    // @ts-ignore
-    images: `${process.env.NEXT_PUBLIC_DOMAIN}/api/og/${params.id}`,
+    metadataBase: new URL(
+      process.env.NEXT_PUBLIC_DOMAIN ?? "http://localhost:3000",
+    ),
+    openGraph: {
+      images: `/api/og/${params.id}`,
+    },
   };
 }
 
