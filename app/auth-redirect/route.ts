@@ -1,18 +1,35 @@
 import altogic from "@/utils/altogic";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const accessToken = url.searchParams.get("access_token") as string;
   const status = url.searchParams.get("status");
   const isOk = status === "200";
+
+  const freeCreditsCookie = req.cookies.get("freeCredits");
+  if (freeCreditsCookie && freeCreditsCookie.value === "25") {
+    console.log("freeCreditsCookie", freeCreditsCookie);
+  }
 
   const destinationUrl = new URL("/", new URL(req.url).origin);
   const response = NextResponse.redirect(destinationUrl, { status: 302 });
 
   if (!isOk) return response;
 
-  const { session, errors } = await altogic.auth.getAuthGrant(accessToken);
+  const { user, session } = await altogic.auth.getAuthGrant(accessToken);
+
+  if (user) {
+    await fetch(`${process.env.NEXT_PUBLIC_ALTOGIC_API_BASE_URL}/credits`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: user.email,
+      }),
+    });
+  }
 
   if (session) {
     response.cookies.set("sessionToken", session.token, {
