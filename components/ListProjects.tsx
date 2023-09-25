@@ -23,6 +23,10 @@ export default function ListProjects({ projects }: ListProjectsProps) {
   return <>{_projects?.map((project) => <ProjectItem project={project} />)}</>;
 }
 
+function calc(x: number) {
+  return 10 / x / 10;
+}
+
 function ProjectItem({ project }: { project: Project }) {
   const scale = 0.4;
   const { setProject } = useProject();
@@ -59,8 +63,8 @@ function ProjectItem({ project }: { project: Project }) {
       >
         <iframe
           style={{
-            width: `${parentWidth * 2.5}px`,
-            height: `${parentHeight * 2.5}px`,
+            width: `${parentWidth * calc(scale)}px`,
+            height: `${parentHeight * calc(scale)}px`,
             transform: `scale(${scale})`,
           }}
           className={cn(

@@ -8,6 +8,7 @@ import { Project } from "@/types";
 import { useRouter } from "next/navigation";
 import useProjectList from "@/hooks/useProjectList";
 import { Trash } from "lucide-react";
+import Modal from "@/components/Modal";
 
 export default function DeleteProjectConfirmDialog({
   project,
@@ -34,7 +35,6 @@ export default function DeleteProjectConfirmDialog({
 
   return (
     <ConfirmDialog
-      text="confirm delete project"
       trigger={
         <Button
           variant="danger"
