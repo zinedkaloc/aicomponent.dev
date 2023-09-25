@@ -36,7 +36,7 @@ export default function Socials() {
   };
 
   return (
-    <section className="fixed bottom-6 right-6 flex items-center gap-3 flex-col">
+    <section className="fixed z-50 bottom-6 right-6 flex items-center gap-3 flex-col">
       <TooltipProvider>
         <Tooltip delayDuration={0}>
           <TooltipTrigger>

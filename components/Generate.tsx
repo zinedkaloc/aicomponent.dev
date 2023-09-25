@@ -10,6 +10,7 @@ import {
   Download,
   MonitorSmartphone,
   Plus,
+  Star,
   Share,
 } from "lucide-react";
 import RateModal from "@/components/RateModal";
@@ -27,6 +28,12 @@ import History from "@/components/History";
 import FirstPrompt from "@/components/FirstPrompt";
 import Frame from "react-frame-component";
 import { useRouter } from "next/navigation";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/Tooltip";
 
 const theme = githubGist;
 const exampleText = "A login form";
@@ -39,13 +46,14 @@ export default function Generate(props: { reset: () => void }) {
   const [hasNoCreditsError, setHasNoCreditsError] = useState(false);
   const [firstPrompt, setFirstPrompt] = useState<null | string>(null);
   const [codeViewActive, setCodeViewActive] = useState(false);
-  const [showedRatingModal, setShowedRatingModal] = useState(false);
   const [nanoId, setNanoId] = useState<string>();
   const [iframeContent, setIframeContent] = useState<string>();
   const [projectId, setProjectId] = useState<string>();
   const [subProjectId, setSubProjectId] = useState<string>();
   const [projects, setProjects] = useState<ProjectHistory[]>([]);
   const [copied, setCopied] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const [rated, setRated] = useState(false);
 
   const selected = Number(get("selected") ?? 0);
 
@@ -159,6 +167,8 @@ export default function Generate(props: { reset: () => void }) {
 
     await updateProject({ result }, id, type);
 
+    if (projectId) setFinished(true);
+
     setProjects((prev) => {
       return prev.map((sb, index) => {
         if (sb.id === id) {
@@ -167,13 +177,6 @@ export default function Generate(props: { reset: () => void }) {
         return sb;
       });
     });
-
-    if (!showedRatingModal) {
-      const params = new URLSearchParams(window.location.search);
-      params.set("rateModal", "true");
-      replace(`?${params.toString()}`);
-      setShowedRatingModal(true);
-    }
   };
 
   useEffect(() => {
@@ -182,19 +185,6 @@ export default function Generate(props: { reset: () => void }) {
       setIframeContent(lastMessage.content);
   }, [messages]);
 
-  /*
-  useEffect(() => {
-    if (!iframeRef.current?.contentDocument || !throttledContent) return;
-
-    iframeRef.current.contentDocument.open();
-    iframeRef.current.contentDocument.write(
-      `${initialIframeContent} ${throttledContent}`,
-    );
-    iframeRef.current.contentDocument.close();
-  }, [throttledContent, codeViewActive]);
-
-
-   */
   const handleSave = () => {
     if (iframeContent) downloadHTML(iframeContent);
   };
@@ -270,16 +260,39 @@ export default function Generate(props: { reset: () => void }) {
   }
 
   const HeaderButtons = (
-    <div className="flex gap-2 items-center">
+    <div className="flex gap-2 items-center lg:max-w-auto">
       {isLoading && (
-        <Button onClick={stopGeneration} className="py-1 px-3 h-[34px] gap-2">
+        <Button
+          onClick={stopGeneration}
+          className="py-1 px-3 h-[34px] whitespace-nowrap gap-2"
+        >
           <LoadingSpinner className={cn("mr-1")} />
-          Stop Generation
+          Stop generation
         </Button>
       )}
 
+      {finished && !rated && selected === 0 && (
+        <TooltipProvider>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {
+                  const params = new URLSearchParams(window.location.search);
+                  params.set("rateModal", "true");
+                  replace(`?${params.toString()}`);
+                }}
+                className="p-1 gap-2 h-[34px] whitespace-nowrap aspect-square"
+              >
+                <Star className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Rate your experience</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+
       <Button
-        className="py-1 px-3 h-[34px] gap-2"
+        className="py-1 px-3 h-[34px] whitespace-nowrap gap-2"
         onClick={() => {
           sessionStorage.clear();
           deleteByKey("selected");
@@ -290,7 +303,10 @@ export default function Generate(props: { reset: () => void }) {
         <Plus className="h-5 w-5" />
       </Button>
       {projects.some((p) => p.ready) && (
-        <Button className="py-1 px-3 h-[34px] gap-2" onClick={share}>
+        <Button
+          className="py-1 px-3 h-[34px] whitespace-nowrap gap-2"
+          onClick={share}
+        >
           {copied ? (
             <>
               Copied
@@ -305,7 +321,7 @@ export default function Generate(props: { reset: () => void }) {
         </Button>
       )}
       <Button
-        className="py-1 px-3 h-[34px] gap-2"
+        className="py-1 px-3 h-[34px] whitespace-nowrap gap-2"
         onClick={() => setCodeViewActive(!codeViewActive)}
       >
         {codeViewActive ? (
@@ -403,7 +419,7 @@ export default function Generate(props: { reset: () => void }) {
 
         {isLoading && !iframeContent && <LoadingSpinner />}
       </div>
-      <RateModal key={projectId} show={!!projectId} />
+      <RateModal key={projectId} onRateSubmit={() => setRated(true)} />
     </>
   );
 }

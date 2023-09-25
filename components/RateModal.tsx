@@ -7,7 +7,11 @@ import Button from "@/components/Button";
 import { Star } from "@smastrom/react-rating";
 import LoadingSpinner from "@/components/loadingSpinner";
 
-export default function RateModal({ show }: { show: boolean }) {
+interface RatingModalProps {
+  onRateSubmit?: (rating: number, ratingText: string) => void;
+}
+
+export default function RateModal(props: RatingModalProps) {
   const { deleteByKey, has } = useSearchParams();
   const [rating, setRating] = useState(5);
   const [ratingText, setRatingText] = useState("");
@@ -35,8 +39,10 @@ export default function RateModal({ show }: { show: boolean }) {
           ratingText,
         }),
       });
-      if (res.ok) close();
-      else {
+      if (res.ok) {
+        props.onRateSubmit?.(rating, ratingText);
+        close();
+      } else {
         setHasError(true);
       }
     } catch (e) {
