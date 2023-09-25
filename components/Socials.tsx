@@ -10,18 +10,18 @@ import TwitterLogo from "@/components/TwitterLogo";
 import { useState } from "react";
 
 const tweetIntents = [
-  "Just used AI to craft an EPIC landing page in minutes with AIpage.dev ! 🤖 This is the future of web design! Check it out 👉 @aipagedev",
-  "Creating a stunning webpage has never been easier thanks to AIpage.dev! 🚀 Give it a try 👉 @aipagedev",
-  "Web design will never be the same after you try AIpage.dev! 🛠️ A whole new level of creativity unleashed! Check it out 👉 @aipagedev",
-  "Revolutionize your web design process with AIpage.dev. The future is here! 👉 @aipagedev",
-  "I just built an amazing webpage with AIpage.dev in minutes! 🌟 You have to try this 👉 @aipagedev",
-  "AIpage.dev is a game-changer for web design! Say hello to efficiency 👋 @aipagedev",
-  "Why spend hours on web design when AIpage.dev can do it in minutes? 🕒 Check it out! 👉 @aipagedev",
-  "Impressed by the power of AI in web design with AIpage.dev! This is incredible 👀 @aipagedev",
-  "I used AIpage.dev and it completely transformed how I approach web design. You need to try this! 🎉 @aipagedev",
-  "Just when I thought web design couldn’t get any easier, I found AIpage.dev! 🎊 Try it now 👉 @aipagedev",
-  "Unleashing my inner designer with the help of AIpage.dev. This is next level! 🚀 Check it out 👉 @aipagedev",
-  "With AIpage.dev, I can focus on creativity while AI handles the coding. It’s amazing! 💥 @aipagedev",
+  "Just used AI to craft an EPIC components in minutes with https://www.aicomponent.dev ! 🤖 This is the future of component design! Check it out 👉 @aicomponentdev",
+  "Creating a stunning components has never been easier thanks to https://www.aicomponent.dev ! 🚀 Give it a try 👉 @aicomponentdev",
+  "Web design will never be the same after you try https://www.aicomponent.dev ! 🛠️ A whole new level of creativity unleashed! Check it out 👉 @aicomponentdev",
+  "Revolutionize your component design process with https://www.aicomponent.dev . The future is here! 👉 @aicomponentdev",
+  "I just built an amazing components with https://www.aicomponent.dev in minutes! 🌟 You have to try this 👉 @aicomponentdev",
+  "https://www.aicomponent.dev is a game-changer for component design! Say hello to efficiency 👋 @aicomponentdev",
+  "Why spend hours on component design when https://www.aicomponent.dev can do it in minutes? 🕒 Check it out! 👉 @aicomponentdev",
+  "Impressed by the power of AI in component design with https://www.aicomponent.dev ! This is incredible 👀 @aicomponentdev",
+  "I used https://www.aicomponent.dev and it completely transformed how I approach component design. You need to try this! 🎉 @aicomponentdev",
+  "Just when I thought component design couldn’t get any easier, I found https://www.aicomponent.dev ! 🎊 Try it now 👉 @aicomponentdev",
+  "Unleashing my inner designer with the help of https://www.aicomponent.dev. This is next level! 🚀 Check it out 👉 @aicomponentdev",
+  "With https://www.aicomponent.dev , I can focus on creativity while AI handles the coding. It’s amazing! 💥 @aicomponentdev",
 ];
 
 export default function Socials() {
@@ -54,8 +54,8 @@ export default function Socials() {
           </TooltipTrigger>
           <TooltipContent align="end" side="top" className="w-[300px]">
             Help spread the word! 📢 Post a tweet of your creation on Twitter
-            and tag @aipagedev for early access to our exclusive beta—packed
-            with stunning features. 🚀
+            and tag @aicomponentdev for early access to our exclusive
+            beta—packed with stunning features. 🚀
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
