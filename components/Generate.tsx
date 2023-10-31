@@ -88,7 +88,7 @@ export default function Generate(props: { reset: () => void }) {
   async function share() {
     try {
       await navigator.clipboard.writeText(
-        `${window.location.origin}/projects/${projectId}?selected=${selected}`,
+        `${window.location.origin}/projects/${projectId}?selected=${selected}`
       );
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -217,7 +217,7 @@ export default function Generate(props: { reset: () => void }) {
       className={cn(
         "w-full",
         !firstPrompt && "sm:w-11/12 md:w-[800px] mx-auto mb-4",
-        firstPrompt && "w-full flex justify-center items-center",
+        firstPrompt && "w-full flex justify-center items-center"
       )}
     >
       <input
@@ -225,7 +225,7 @@ export default function Generate(props: { reset: () => void }) {
           "p-2 focus:outline-0 focus:shadow-lg focus:border-gray-400 transition border text-ellipsis border-gray-300 px-4",
           firstPrompt
             ? "w-full bg-white/50 hover:border-black rounded-3xl"
-            : "w-full mb-3 rounded-full",
+            : "w-full mb-3 rounded-full"
         )}
         value={input}
         placeholder={
@@ -356,16 +356,10 @@ export default function Generate(props: { reset: () => void }) {
         className={cn(
           "flex flex-col w-full min-h-[calc(100vh-72px)]",
           "overflow-hidden items-center",
-          "px-4 md:px-14 pt-6",
+          "px-4 md:px-14 pt-6"
         )}
       >
         {isLoading || firstPrompt ? null : <Hero />}
-
-        {!firstPrompt && (
-          <div className="flex flex-col w-full justify-center items-center">
-            {Form}
-          </div>
-        )}
 
         {hasNoCreditsError && <NoCredits />}
 
@@ -395,7 +389,7 @@ export default function Generate(props: { reset: () => void }) {
                     initialContent={`<!DOCTYPE html><html><head> <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/tailwind.min.css" rel="stylesheet"> <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script> <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> </head> <body></body> </html>`}
                     className={cn(
                       "w-full h-full",
-                      !codeViewActive ? "block" : "hidden",
+                      !codeViewActive ? "block" : "hidden"
                     )}
                   >
                     <div
