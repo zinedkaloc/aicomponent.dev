@@ -1,7 +1,5 @@
 import AuthModal from "@/components/AuthModal";
-import PricesModal from "@/components/PricesModal";
 import { AuthProvider } from "@/context/AuthContext";
-import { fetchProducts } from "@/lib/auth";
 import "../styles/global.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
@@ -32,7 +30,6 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   const user = await actionWrapper(getAuthUser());
-  const products = await fetchProducts();
 
   return (
     <AuthProvider user={user ?? null}>
@@ -41,7 +38,6 @@ export default async function RootLayout({
           <body>
             {children}
             <AuthModal />
-            <PricesModal products={products} />
             <Toaster position="top-center" />
           </body>
         </html>
