@@ -1,12 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
-import { Invoice } from "@/types";
 import { moneyFormat, stripePrice } from "@/lib/utils";
 
 export default async function InvoicesPage() {
-  const invoices = await fetchInvoices();
-  const hasInvoices = invoices?.length > 0;
-
+  const hasInvoices = false;
   return (
     <section className="flex h-full w-full flex-1 flex-col px-6 py-6">
       <div className="mx-auto w-full space-y-4 sm:max-w-screen-2xl sm:px-2.5 lg:px-20">
@@ -36,10 +33,10 @@ export default async function InvoicesPage() {
         ) : (
           <>
             <div className="hidden md:block">
-              <DesktopTable invoices={invoices} />
+              <DesktopTable invoices={[]} />
             </div>
             <div className="block md:hidden">
-              <MobileTable invoices={invoices} />
+              <MobileTable invoices={[]} />
             </div>
           </>
         )}
@@ -48,7 +45,7 @@ export default async function InvoicesPage() {
   );
 }
 
-function DesktopTable({ invoices }: { invoices: Invoice[] }) {
+function DesktopTable({ invoices }: { invoices: any[] }) {
   return (
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -131,7 +128,7 @@ function DesktopTable({ invoices }: { invoices: Invoice[] }) {
   );
 }
 
-function MobileTable({ invoices }: { invoices: Invoice[] }) {
+function MobileTable({ invoices }: { invoices: any[] }) {
   return (
     <div className="flex flex-col gap-2">
       {invoices?.map((invoice) => (
