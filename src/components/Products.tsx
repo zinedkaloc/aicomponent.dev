@@ -1,9 +1,8 @@
 "use client";
-import { Product as ProductType } from "@/types";
 import Product from "@/components/Product";
 import { cn } from "@/lib/utils";
 
-export default function Products({ products }: { products: ProductType[] }) {
+export default function Products({ products }: { products: any[] }) {
   return (
     <div className="space-y-10 px-4 py-10 sm:px-6 lg:px-8">
       <div className="sm:align-center sm:flex sm:flex-col">

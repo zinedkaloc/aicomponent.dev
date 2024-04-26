@@ -1,17 +1,19 @@
+import type { AgnostClient } from "@agnost/client";
+
 export interface User {
   id: number;
   credits: number;
   email: string;
-  lastloginat: string;
+  last_login_at: string;
   name: string;
   password: string;
   phone: string;
-  phoneverified: boolean;
-  profilepicture: string;
+  phone_verified: boolean;
+  profile_picture: string;
   provider: string;
-  provideruserid: string;
-  signupat: string;
-  emailverified: boolean;
+  provider_user_id: string;
+  signup_at: string;
+  email_verified: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -19,7 +21,7 @@ export interface User {
 export interface Project {
   id: number;
   parent: number;
-  content: string;
+  prompt: string;
   name: string;
   result: string;
   rating: number;
@@ -54,3 +56,9 @@ export type ProjectHistory = {
   result?: string;
   isSubProject: boolean;
 };
+
+declare global {
+  interface Window {
+    agnost: AgnostClient;
+  }
+}

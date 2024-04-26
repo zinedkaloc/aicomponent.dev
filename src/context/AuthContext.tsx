@@ -1,21 +1,17 @@
 "use client";
 
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext } from "react";
 import type { User } from "@/types";
 import { actionWrapper, getAuthUser, signOut } from "@/lib/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface AuthContext {
   user: User | null;
   setUser: (user: User | null | undefined) => void;
   logout: (redirect?: string) => void;
+  refetchUser: () => void;
 }
 
 export const AuthContext = createContext<AuthContext>({
@@ -26,6 +22,9 @@ export const AuthContext = createContext<AuthContext>({
   logout: () => {
     throw new Error("logout must be defined");
   },
+  refetchUser: () => {
+    throw new Error("refetchUser must be defined");
+  },
 });
 
 interface AuthProviderProps {
@@ -34,40 +33,44 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ user, children }: AuthProviderProps) => {
-  const [_user, setUser] = useState<User | null>(user);
-  const { replace } = useRouter();
+  const queryClient = useQueryClient();
+  const { replace, refresh } = useRouter();
+
+  const { data: _user } = useQuery({
+    queryKey: ["authUser"],
+    initialData: user,
+    staleTime: 15_000,
+    refetchOnReconnect: true,
+    refetchOnWindowFocus: true,
+    queryFn: () => actionWrapper(getAuthUser()),
+  });
+
+  function refetchUser() {
+    queryClient.invalidateQueries({ queryKey: ["authUser"] });
+  }
 
   function setAuthUser(user?: User | null) {
-    // @ts-ignore
-    setUser(user);
-  }
-
-  useEffect(() => {
-    const interval = setInterval(fetchUser, 15_000);
-    document.addEventListener("visibilitychange", visibilityChange);
-
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener("visibilitychange", visibilityChange);
-    };
-  }, []);
-
-  async function fetchUser() {
-    const user = await actionWrapper(getAuthUser());
-    setUser(user);
-  }
-
-  function visibilityChange() {
-    if (document.visibilityState === "visible") {
-      fetchUser();
-    }
+    queryClient.setQueriesData(
+      {
+        queryKey: ["authUser"],
+      },
+      user,
+    );
   }
 
   async function logout(redirect?: string) {
     try {
       await actionWrapper(signOut());
-      setUser(null);
-      if (redirect) replace(redirect);
+      queryClient.setQueriesData(
+        {
+          queryKey: ["authUser"],
+        },
+        null,
+      );
+      if (redirect) {
+        replace(redirect);
+        refresh();
+      }
     } catch (errors) {
       console.error(errors);
       toast.error("Failed to sign out, please try again.");
@@ -75,7 +78,9 @@ export const AuthProvider = ({ user, children }: AuthProviderProps) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user: _user, setUser: setAuthUser, logout }}>
+    <AuthContext.Provider
+      value={{ user: _user, setUser: setAuthUser, logout, refetchUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useRef } from "react";
 import Skeleton from "@/components/Skeleton";
+import { TooltipArrow } from "@radix-ui/react-tooltip";
 
 interface HistoryProps {
   projects: ProjectHistory[];
@@ -73,13 +74,7 @@ function HistoryItem({
             <TooltipTrigger asChild>
               <Component
                 onClick={() => onClick?.(index)}
-                href={
-                  onClick
-                    ? undefined
-                    : project.isSubProject
-                      ? `/api/preview/sub/${project.id}`
-                      : `/api/preview/${project.id}`
-                }
+                href={onClick ? undefined : `/api/preview/${project.id}`}
                 target="_blank"
                 className={cn(
                   "relative z-10 flex w-[200px] shrink-0 cursor-pointer lg:w-full",
@@ -97,11 +92,7 @@ function HistoryItem({
                     <iframe
                       loading="lazy"
                       className="pointer-events-none absolute h-full w-full origin-top-left scale-[0.2] select-none overflow-hidden bg-white opacity-70 transition-opacity [content-visibility:auto] lg:scale-[0.3]"
-                      src={
-                        project.isSubProject
-                          ? `/api/preview/sub/${project.id}`
-                          : `/api/preview/${project.id}`
-                      }
+                      src={`/api/preview/${project.id}`}
                       sandbox="allow-scripts allow-same-origin"
                       style={{
                         width: 1000,
@@ -112,7 +103,11 @@ function HistoryItem({
                 </div>
               </Component>
             </TooltipTrigger>
-            <TooltipContent side="left">{project.prompt}</TooltipContent>
+
+            <TooltipContent side="left">
+              {project.prompt}
+              <TooltipArrow />
+            </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       )}

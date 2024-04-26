@@ -10,7 +10,7 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
     {
       id: 1,
       name: "Components",
-      href: "/profile/projects",
+      href: "/projects",
     },
   ];
 

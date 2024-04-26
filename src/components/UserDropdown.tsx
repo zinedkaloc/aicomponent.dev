@@ -7,7 +7,7 @@ import IconMenu from "@/components/IconMenu";
 import LogoutIcon from "@/components/LogoutIcon";
 import Link from "next/link";
 import useSearchParams from "@/hooks/useSearchParams";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import UserAvatar from "@/components/UserAvatar";
 
 export default function UserDropdown() {
   const { user, logout } = useAuth();
@@ -89,15 +89,9 @@ export default function UserDropdown() {
       }
       align="end"
     >
-      <Avatar className="size-9 cursor-pointer">
-        <AvatarImage src={user.profilepicture} />
-        <AvatarFallback>
-          {user.name
-            .split(" ")
-            .map((name) => name[0])
-            .join("")}
-        </AvatarFallback>
-      </Avatar>
+      <button>
+        <UserAvatar />
+      </button>
     </Popover>
   );
 }

@@ -1,11 +1,10 @@
 "use client";
 import useSearchParams from "@/hooks/useSearchParams";
 import Modal from "@/components/Modal";
-import { Rating as ReactRating } from "@smastrom/react-rating";
+import { Rating as ReactRating, Star } from "@smastrom/react-rating";
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Star } from "@smastrom/react-rating";
-import LoadingSpinner from "@/components/loadingSpinner";
+import Spinner from "@/components/Spinner";
 
 interface RatingModalProps {
   onRateSubmit?: (rating: number, ratingText: string) => void;
@@ -110,7 +109,7 @@ export default function RateModal(props: RatingModalProps) {
               disabled={loading}
               variant="default"
             >
-              {loading && <LoadingSpinner className="h-4 w-4" />}
+              {loading && <Spinner className="h-4 w-4" />}
               Submit
             </Button>
           </div>

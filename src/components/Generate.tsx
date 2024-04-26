@@ -1,30 +1,27 @@
 "use client";
 
+import { useDebounce } from "@uidotdev/usehooks";
 import BrowserWindow from "@/components/BrowserWindow";
-import LoadingSpinner from "@/components/loadingSpinner";
 import { Button } from "@/components/ui/button";
 import {
   Check,
   Code2,
   Download,
   MonitorSmartphone,
-  Plus,
-  Star,
   Share,
+  Star,
 } from "lucide-react";
 import RateModal from "@/components/RateModal";
-import { useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import useSearchParams from "@/hooks/useSearchParams";
 import { type Message, useChat } from "ai/react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { githubGist } from "react-syntax-highlighter/dist/cjs/styles/hljs";
-import Hero from "@/components/Hero";
 import NoCredits from "@/components/NoCredits";
-import type { ProjectHistory } from "@/types";
+import type { Project, ProjectHistory } from "@/types";
 import History from "@/components/History";
 import FirstPrompt from "@/components/FirstPrompt";
-import Frame from "react-frame-component";
 import { useRouter } from "next/navigation";
 import {
   Tooltip,
@@ -32,31 +29,61 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/Tooltip";
-import { cn, updateProject, downloadHTML } from "@/lib/utils";
-import { v4 as uuidv4 } from "uuid";
-import Agnost from "@/lib/agnost";
+import { cn, downloadHTML } from "@/lib/utils";
+import { toast } from "sonner";
+import { usePrompt } from "@/hooks/usePrompt";
+import Spinner from "@/components/Spinner";
+import useSocket from "@/hooks/useSocket";
 
 const theme = githubGist;
-const exampleText = "A login form";
 
-export default function Generate(props: { reset: () => void }) {
+export default function Generate() {
   const { user, setUser } = useAuth();
   const { replace } = useRouter();
+  const { connected, realtime } = useSocket();
+
+  useEffect(() => {
+    console.log({ connected });
+  }, [connected]);
+
   const { set, get, has, deleteByKey } = useSearchParams();
+
+  const channelId = usePrompt((state) => state.channelId);
+  const prompt = usePrompt((state) => state.prompt);
+  const setPrompt = usePrompt((state) => state.setPrompt);
 
   const [hasNoCreditsError, setHasNoCreditsError] = useState(false);
   const [firstPrompt, setFirstPrompt] = useState<null | string>(null);
   const [codeViewActive, setCodeViewActive] = useState(false);
-  const [nanoId, setNanoId] = useState<string>();
   const [iframeContent, setIframeContent] = useState<string>();
-  const [projectId, setProjectId] = useState<string>();
-  const [subProjectId, setSubProjectId] = useState<string>();
-  const [projects, setProjects] = useState<ProjectHistory[]>([]);
+  const [projectId, setProjectId] = useState<number>();
+  const [subProjectId, setSubProjectId] = useState<number>();
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  const [history, setHistory] = useState<ProjectHistory[]>([]);
+
   const [copied, setCopied] = useState(false);
   const [finished, setFinished] = useState(false);
   const [rated, setRated] = useState(false);
-
   const selected = Number(get("selected") ?? 0);
+
+  const debounceContent = useDebounce(iframeContent, 300);
+
+  useEffect(() => {
+    if (!prompt) {
+      return replace("/");
+    }
+
+    if (!connected) return;
+
+    handleSubmit(new Event("submit") as unknown as FormEvent<HTMLFormElement>);
+    deleteByKey("selected");
+    if (!firstPrompt) setFirstPrompt(prompt);
+
+    return () => {
+      setPrompt(undefined);
+    };
+  }, [connected]);
 
   const {
     messages,
@@ -69,19 +96,36 @@ export default function Generate(props: { reset: () => void }) {
   } = useChat({
     body: {
       projectId,
-      channelId: nanoId,
+      channelId,
     },
+    initialInput: prompt,
     onResponse: (message) => {
       setHasNoCreditsError(false);
       decreaseCredit();
     },
     onFinish: async (message: Message) => {
+      const subProjectId = sessionStorage.getItem("subProjectId")
+        ? Number(sessionStorage.getItem("subProjectId"))
+        : undefined;
+
+      const projectId = sessionStorage.getItem("projectId")
+        ? Number(sessionStorage.getItem("projectId"))
+        : undefined;
+
+      const id = subProjectId ?? projectId;
       try {
         const res = JSON.parse(message.content) as { credits: number };
         setCredits(res.credits);
         setHasNoCreditsError(res.credits === 0);
       } catch {
-        await saveResult(message.content);
+        setHistory((projects) => {
+          return projects.map((project) => {
+            if (project.id === id) {
+              return { ...project, ready: true, result: message.content };
+            }
+            return project;
+          });
+        });
       }
     },
   });
@@ -94,102 +138,77 @@ export default function Generate(props: { reset: () => void }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      alert("Failed to copy URL to clipboard");
+      toast.error("Failed to copy URL to clipboard");
       setCopied(false);
     }
   }
 
-  const projectIdCallback = ({ message }: any) => {
-    setProjectId(message.id);
-    sessionStorage.setItem("projectId", message.id);
-    setProjects((prev) => {
-      return [
-        ...prev,
-        {
-          id: message.id,
-          prompt: message.prompt,
-          ready: false,
-          isSubProject: false,
-        },
-      ];
-    });
-  };
-
-  const subProjectIdCallback = ({
-    message,
-  }: {
-    message: { id: string; prompt: string };
-  }) => {
-    setSubProjectId(message.id);
-    sessionStorage.setItem("subProjectId", message.id);
-    setProjects((prev) => {
-      return [
-        ...prev,
-        {
-          id: message.id,
-          prompt: message.prompt,
-          ready: false,
-          isSubProject: true,
-        },
-      ];
-    });
-  };
-
   useEffect(() => {
-    const { realtime } = Agnost.getBrowserClient();
-    const roomId = uuidv4();
-    setNanoId(roomId);
-    realtime.join(roomId);
+    if (!channelId) return;
+
     sessionStorage.clear();
+    realtime.join(channelId);
+    realtime.onConnect(onConnectHandler);
 
-    realtime.on("projectId", projectIdCallback);
-    realtime.on("subProjectId", subProjectIdCallback);
     return () => {
-      realtime.off("projectId", projectIdCallback);
-      realtime.off("subProjectId", subProjectIdCallback);
-      realtime.leave(roomId);
+      realtime.off("project", realtimeHandler);
+      realtime.offAny(onConnectHandler);
+      realtime.leave(channelId);
     };
-  }, []);
+  }, [channelId]);
+
+  function onConnectHandler() {
+    console.log("connected");
+    realtime.on("project", realtimeHandler);
+  }
+
+  function realtimeHandler({ message }: { message: Project }) {
+    console.log(message);
+    if (message.parent) {
+      setSubProjectId(message.id);
+      sessionStorage.setItem("subProjectId", message.id.toString());
+    } else {
+      setProjectId(message.id);
+      sessionStorage.setItem("projectId", message.id.toString());
+    }
+
+    setHistory((prev) => {
+      return [
+        ...prev,
+        {
+          id: message.id,
+          prompt: message.prompt,
+          ready: false,
+          isSubProject: !!message.parent,
+        },
+      ];
+    });
+  }
 
   useEffect(() => {
-    const lastProject = projects[projects.length - 1];
+    const lastProject = history[history.length - 1];
     if (!lastProject || !lastProject?.ready) return;
 
     setTimeout(() => {
       const params = new URLSearchParams(window.location.search);
-      params.set("selected", `${projects.length - 1}`);
+      params.set("selected", `${history.length - 1}`);
       replace(`?${params.toString()}`);
     }, 1000);
-  }, [projects]);
-
-  const saveResult = async (result: string) => {
-    const projectId = sessionStorage.getItem("projectId");
-    const subProjectId = sessionStorage.getItem("subProjectId");
-
-    const type = subProjectId ? "sub-project" : "project";
-    const id = subProjectId ?? projectId;
-
-    if (!id) return;
-
-    await updateProject({ result }, id, type);
-
-    if (projectId) setFinished(true);
-
-    setProjects((prev) => {
-      return prev.map((sb, index) => {
-        if (sb.id === id) {
-          return { ...sb, ready: true, result };
-        }
-        return sb;
-      });
-    });
-  };
+  }, [history]);
 
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
-    if (lastMessage && lastMessage.role !== "user")
+    if (lastMessage && lastMessage.role !== "user") {
       setIframeContent(lastMessage.content);
+    }
   }, [messages]);
+
+  useEffect(() => {
+    if (!iframeRef.current) return;
+    iframeRef.current.contentDocument?.open();
+    iframeRef.current.contentDocument?.write(debounceContent?.toString() ?? "");
+    iframeRef.current.contentDocument?.close();
+  }, [debounceContent, iframeRef.current]);
 
   const handleSave = () => {
     if (iframeContent) downloadHTML(iframeContent);
@@ -228,7 +247,7 @@ export default function Generate(props: { reset: () => void }) {
     >
       <input
         className={cn(
-          "text-ellipsis border border-gray-300 p-2 px-4 transition focus:border-gray-400 focus:shadow-lg focus:outline-0",
+          "text-ellipsis border p-2 px-4 transition focus:shadow-lg focus:outline-0",
           firstPrompt
             ? "w-full rounded-3xl bg-white/50 hover:border-black"
             : "mb-3 w-full rounded-full",
@@ -246,21 +265,13 @@ export default function Generate(props: { reset: () => void }) {
         readOnly={!user}
         disabled={isLoading}
       />
-      {!firstPrompt && (
-        <p
-          className="ml-4 text-xs font-medium text-gray-500"
-          onClick={() => setInput(exampleText)}
-        >
-          <strong>Tip:</strong> {exampleText}
-        </p>
-      )}
     </form>
   );
 
   function stopGeneration() {
-    const id = subProjectId ?? projectId;
+    const id = Number(subProjectId ?? projectId);
     stop();
-    setProjects((prev) => {
+    setHistory((prev) => {
       return prev.filter((p) => p.id !== id);
     });
   }
@@ -269,10 +280,12 @@ export default function Generate(props: { reset: () => void }) {
     <div className="lg:max-w-auto flex items-center gap-2">
       {isLoading && (
         <Button
+          size="xs"
+          variant="light"
           onClick={stopGeneration}
-          className="h-[34px] gap-2 whitespace-nowrap px-3 py-1"
+          className="gap-2 whitespace-nowrap px-3 py-1"
         >
-          <LoadingSpinner className={cn("mr-1")} />
+          <Spinner />
           Stop generation
         </Button>
       )}
@@ -282,68 +295,67 @@ export default function Generate(props: { reset: () => void }) {
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <Button
+                size="xs"
+                variant="light"
                 onClick={() => {
                   const params = new URLSearchParams(window.location.search);
                   params.set("rateModal", "true");
                   replace(`?${params.toString()}`);
                 }}
-                className="aspect-square h-[34px] gap-2 whitespace-nowrap p-1"
+                className="aspect-square gap-2 whitespace-nowrap p-1"
               >
-                <Star className="h-5 w-5" />
+                <Star />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Rate your experience</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       )}
-
-      <Button
-        className="h-[34px] gap-2 whitespace-nowrap px-3 py-1"
-        onClick={() => {
-          sessionStorage.clear();
-          deleteByKey("selected");
-          props.reset();
-        }}
-      >
-        New
-        <Plus className="h-5 w-5" />
-      </Button>
-      {projects.some((p) => p.ready) && (
+      {history.some((p) => p.ready) && (
         <Button
-          className="h-[34px] gap-2 whitespace-nowrap px-3 py-1"
+          variant="light"
+          size="xs"
+          className="gap-2 whitespace-nowrap px-3 py-1"
           onClick={share}
         >
           {copied ? (
             <>
+              <Check />
               Copied
-              <Check className="h-5 w-5" />
             </>
           ) : (
             <>
+              <Share />
               Share
-              <Share className="h-5 w-5" />
             </>
           )}
         </Button>
       )}
       <Button
-        className="h-[34px] gap-2 whitespace-nowrap px-3 py-1"
+        size="xs"
+        variant="light"
+        className="gap-2 whitespace-nowrap px-3 py-1"
         onClick={() => setCodeViewActive(!codeViewActive)}
       >
         {codeViewActive ? (
           <>
+            <MonitorSmartphone />
             Display
-            <MonitorSmartphone className="h-5 w-5" />
           </>
         ) : (
           <>
+            <Code2 />
             Code
-            <Code2 className="h-5 w-5" />
           </>
         )}
       </Button>
-      <Button className="aspect-square h-[34px] gap-2 p-1" onClick={handleSave}>
-        <Download className="h-5 w-5" />
+      <Button
+        size="xs"
+        variant="light"
+        className="aspect-square gap-2 p-1"
+        onClick={handleSave}
+      >
+        <Download />
       </Button>
     </div>
   );
@@ -351,10 +363,10 @@ export default function Generate(props: { reset: () => void }) {
   const selectedComponent = useMemo(() => {
     return {
       url: selected === 0 ? "/api/preview/" : `/api/preview/sub/`,
-      id: projects[selected]?.id,
-      result: projects[selected]?.result,
+      id: history[selected]?.id,
+      result: history[selected]?.result,
     };
-  }, [projects, selected]);
+  }, [history, selected]);
 
   return (
     <>
@@ -365,17 +377,9 @@ export default function Generate(props: { reset: () => void }) {
           "px-4 pt-6 md:px-14",
         )}
       >
-        {isLoading || firstPrompt ? null : <Hero />}
-
-        {!firstPrompt && (
-          <div className="flex w-full flex-col items-center justify-center">
-            {Form}
-          </div>
-        )}
-
         {hasNoCreditsError && <NoCredits />}
 
-        {!hasNoCreditsError && iframeContent && (
+        {!hasNoCreditsError && (
           <section className="w-full space-y-2">
             {firstPrompt && <FirstPrompt firstPrompt={firstPrompt} />}
             <div className="grid w-full items-center gap-4 lg:h-[calc(100vh-160px)] lg:grid-cols-[300px_1fr_300px]">
@@ -393,37 +397,25 @@ export default function Generate(props: { reset: () => void }) {
                   >
                     {has("selected")
                       ? (selectedComponent?.result as string)
-                      : iframeContent}
+                      : iframeContent ?? ""}
                   </SyntaxHighlighter>
-                  <Frame
-                    sandbox="allow-same-origin allow-scripts"
-                    mountTarget="body"
-                    initialContent={`<!DOCTYPE html><html><head> <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/tailwind.min.css" rel="stylesheet"> <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script> <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> </head> <body></body> </html>`}
+                  <iframe
+                    ref={iframeRef}
                     className={cn(
                       "h-full w-full",
                       !codeViewActive ? "block" : "hidden",
                     )}
-                  >
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: has("selected")
-                          ? (selectedComponent.result as string)
-                          : iframeContent,
-                      }}
-                    ></div>
-                  </Frame>
+                  />
                 </BrowserWindow>
                 {Form}
               </div>
               <History
                 onClick={(index) => replace(`?selected=${index}`)}
-                projects={projects}
+                projects={history}
               />
             </div>
           </section>
         )}
-
-        {isLoading && !iframeContent && <LoadingSpinner />}
       </div>
       <RateModal key={projectId} onRateSubmit={() => setRated(true)} />
     </>

@@ -3,11 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import LoadingSpinner from "@/components/loadingSpinner";
 import { useAuth } from "@/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { actionWrapper, deleteProfile } from "@/lib/actions";
 import { toast } from "sonner";
+import Spinner from "@/components/Spinner";
 
 export default function DeleteAccountConfirmDialog() {
   const [deleting, setDeleting] = useState(false);
@@ -32,14 +32,14 @@ export default function DeleteAccountConfirmDialog() {
       text="confirm delete account"
       trigger={
         <Button variant="destructive" disabled={deleting} type="button">
-          {deleting && <LoadingSpinner />}
+          {deleting && <Spinner />}
           <p>Delete Account</p>
         </Button>
       }
       onConfirm={deleteAccountHandler}
     >
       <Avatar className="size-20">
-        <AvatarImage src={user.profilepicture} />
+        <AvatarImage src={user.profile_picture} />
         <AvatarFallback>
           {user.name
             .split(" ")

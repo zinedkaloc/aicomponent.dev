@@ -73,10 +73,10 @@ function ProjectItem({ project }: { project: Project }) {
       </div>
       <div className="mt-auto flex items-center justify-between border-t p-4">
         <span
-          title={project.content}
+          title={project.prompt}
           className="max-w-[21ch] truncate text-gray-600 md:max-w-[24ch]"
         >
-          {project.content}
+          {project.prompt}
         </span>
         <time className="whitespace-nowrap text-sm text-slate-500">
           {dateFormat(project.created_at)}

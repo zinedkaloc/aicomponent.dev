@@ -15,7 +15,7 @@ export default async function NotFound() {
           </p>
 
           <div className="mt-6 flex items-center gap-x-3">
-            <Link href="/profile/projects">
+            <Link href="/projects">
               <Button variant="pill">Go to projects</Button>
             </Link>
           </div>

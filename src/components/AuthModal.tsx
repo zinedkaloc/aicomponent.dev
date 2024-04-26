@@ -5,9 +5,9 @@ import Agnost from "@/lib/agnost";
 import useSearchParams from "@/hooks/useSearchParams";
 import Image from "next/image";
 import Modal from "@/components/Modal";
-import LoadingSpinner from "@/components/loadingSpinner";
 import { Button, ButtonProps } from "@/components/ui/button";
 import { env } from "@/env";
+import Spinner from "@/components/Spinner";
 
 type LoginMethod = {
   name: string;
@@ -78,7 +78,7 @@ export default function AuthModal() {
             }}
           >
             {index === selected ? (
-              <LoadingSpinner className="h-4 w-4" />
+              <Spinner className="h-4 w-4" />
             ) : (
               <method.icon />
             )}

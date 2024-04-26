@@ -32,7 +32,7 @@ export default async function ProfileProjects() {
                 className="pointer-events-none blur-0"
                 src="/no-project.png"
               />
-              <Link href="/public">
+              <Link href="/">
                 <Button variant="pill">Create a component</Button>
               </Link>
             </div>

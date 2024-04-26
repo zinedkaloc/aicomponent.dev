@@ -3,11 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import LoadingSpinner from "@/components/loadingSpinner";
 import { Project } from "@/types";
 import { useRouter } from "next/navigation";
 import useProjectList from "@/hooks/useProjectList";
 import { Trash } from "lucide-react";
+import Spinner from "@/components/Spinner";
 
 export default function DeleteProjectConfirmDialog({
   project,
@@ -43,7 +43,7 @@ export default function DeleteProjectConfirmDialog({
           type="button"
         >
           {deleting ? (
-            <LoadingSpinner className="h-4 w-4" />
+            <Spinner className="h-4 w-4" />
           ) : (
             <Trash className="h-4 w-4" />
           )}

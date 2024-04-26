@@ -4,28 +4,14 @@ const config = {
   "parserOptions": {
     "project": true
   },
-  "plugins": [
-    "@typescript-eslint"
-  ],
   "extends": [
     "next/core-web-vitals",
   ],
   "rules": {
-    "@typescript-eslint/array-type": "off",
-    "@typescript-eslint/consistent-type-definitions": "off",
-    "@typescript-eslint/consistent-type-imports": [
-      "warn",
-      {
-        "prefer": "type-imports",
-        "fixStyle": "inline-type-imports"
-      }
-    ],
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      {
-        "argsIgnorePattern": "^_"
-      }
-    ],
+    "react/no-unescaped-entities": 0,
+    "react-hooks/exhaustive-deps": 0,
+    "@next/next/no-img-element": 0,
+    "jsx-a11y/alt-text": 0
   }
 }
 module.exports = config;

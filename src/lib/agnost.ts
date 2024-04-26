@@ -5,6 +5,15 @@ import type { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension
 
 export default class Agnost {
   static getBrowserClient() {
+    if (isClient()) {
+      window.agnost ??= createClient(
+        env.NEXT_PUBLIC_AGNOST_API_URL,
+        env.NEXT_PUBLIC_AGNOST_CLIENT_API_KEY,
+      );
+
+      return window.agnost;
+    }
+
     return createClient(
       env.NEXT_PUBLIC_AGNOST_API_URL,
       env.NEXT_PUBLIC_AGNOST_CLIENT_API_KEY,

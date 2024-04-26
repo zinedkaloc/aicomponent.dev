@@ -5,6 +5,8 @@
 @layer base {
   :root {
     --header-height: 3.5rem;
+    --full-height: calc(100dvh - var(--header-height));
+
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -81,6 +83,10 @@
 
   body:has(.sub-menu) header {
     @apply border-b-0;
+  }
+
+  [type='text'], input:where(:not([type])), [type='email'], [type='url'], [type='password'], [type='number'], [type='date'], [type='datetime-local'], [type='month'], [type='search'], [type='tel'], [type='time'], [type='week'], [multiple], textarea, select {
+    @apply border-border
   }
 
 }

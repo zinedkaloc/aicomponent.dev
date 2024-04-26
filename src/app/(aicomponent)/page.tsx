@@ -1,13 +1,11 @@
-"use client";
-import Generate from "@/components/Generate";
-import { useState } from "react";
+import SubmissionForm from "@/components/SubmissionForm";
+import AIIcon from "@/components/AIIcon";
 
 export default function HomePage() {
-  const [key, setKey] = useState(() => new Date().getTime());
-
-  function reset() {
-    setKey(new Date().getTime());
-  }
-
-  return <Generate key={key} reset={reset} />;
+  return (
+    <div className="container flex h-[--full-height] flex-col items-center gap-6 p-10">
+      <AIIcon className="size-40 shrink-0" />
+      <SubmissionForm />
+    </div>
+  );
 }

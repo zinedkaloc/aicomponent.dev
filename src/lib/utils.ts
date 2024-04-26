@@ -2,15 +2,6 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { Project } from "@/types";
 
-export const initialIframeContent = `
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> 
-<script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/tailwind.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script> 
-<script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/lib/index.min.js"></script> 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-`;
-
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -39,11 +30,12 @@ export function downloadHTML(content: string) {
 
 export async function updateProject(
   data: Omit<Partial<Project>, "id">,
-  _id: string,
+  id: number,
   type: "project" | "sub-project" = "project",
 ) {
   return {};
 }
+
 export function moneyFormat(amount: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",

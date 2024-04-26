@@ -73,13 +73,14 @@ export async function getAuthUser(): ActionReturn<User | null> {
 
 export async function createProject(
   data: Omit<Partial<Project>, "id" | "created_by">,
+  channelId: string,
 ): ActionReturn<Project> {
   const client = Agnost.getServerClient(cookies());
 
-  const { errors, data: project } = await client.endpoint.post(
-    "/projects",
-    data,
-  );
+  const { errors, data: project } = await client.endpoint.post("/projects", {
+    ...data,
+    channelId,
+  });
 
   if (errors) {
     console.error(errors);

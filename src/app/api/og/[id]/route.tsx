@@ -75,7 +75,7 @@ export async function GET(
                 borderRadius: "20px",
               }}
             >
-              {project.content}
+              {project.prompt}
             </span>
           </div>
         </div>

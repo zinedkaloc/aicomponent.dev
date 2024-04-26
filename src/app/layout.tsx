@@ -32,8 +32,8 @@ export default async function RootLayout({
   const user = await actionWrapper(getAuthUser());
 
   return (
-    <AuthProvider user={user ?? null}>
-      <QueryProvider>
+    <QueryProvider>
+      <AuthProvider user={user ?? null}>
         <html lang="en">
           <body>
             {children}
@@ -41,7 +41,7 @@ export default async function RootLayout({
             <Toaster position="top-center" />
           </body>
         </html>
-      </QueryProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </QueryProvider>
   );
 }

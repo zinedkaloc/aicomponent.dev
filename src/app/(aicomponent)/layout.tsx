@@ -1,5 +1,5 @@
 import "@smastrom/react-rating/style.css";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import Header from "@/components/Header";
 import dynamic from "next/dynamic";
 

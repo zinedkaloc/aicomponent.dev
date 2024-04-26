@@ -3,12 +3,11 @@ import { cn, moneyFormat, stripePrice } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import useSearchParams from "@/hooks/useSearchParams";
 import { useState } from "react";
-import { Product as ProductType } from "@/types";
-import LoadingSpinner from "@/components/loadingSpinner";
 import { Button } from "@/components/ui/button";
+import Spinner from "@/components/Spinner";
 
 interface ProductProps {
-  product: ProductType;
+  product: any;
   className?: string;
 }
 export default function Product({ product, className }: ProductProps) {
@@ -67,7 +66,7 @@ export default function Product({ product, className }: ProductProps) {
               variant="pill"
               onClick={() => getPaymentLink(product.id)}
             >
-              {loading ? <LoadingSpinner /> : "Buy"}
+              {loading ? <Spinner /> : "Buy"}
             </Button>
           </div>
         </div>

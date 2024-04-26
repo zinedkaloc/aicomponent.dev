@@ -46,45 +46,44 @@ export default function ProjectDesign(props: ProjectDesignProps) {
   const HeaderButtons = (
     <div className="flex items-center gap-2">
       <Button
-        className="h-[34px] gap-2 px-3 py-1"
-        onClick={() => {
-          sessionStorage.clear();
-          push("/");
-        }}
+        variant="light"
+        size="xs"
+        className="gap-2 px-3 py-1"
+        onClick={share}
       >
-        New
-        <Plus className="h-5 w-5" />
-      </Button>
-      <Button className="h-[34px] gap-2 px-3 py-1" onClick={share}>
         {copied ? (
           <>
+            <Check />
             Copied
-            <Check className="h-5 w-5" />
           </>
         ) : (
           <>
+            <Share />
             Share
-            <Share className="h-5 w-5" />
           </>
         )}
       </Button>
       <Button
+        variant="light"
+        size="xs"
         onClick={() => setCodeViewActive(!codeViewActive)}
-        className="h-[34px] gap-2 px-3 py-1"
+        className="gap-2 px-3 py-1"
       >
         {codeViewActive ? (
           <>
+            <MonitorSmartphone />
             Display
-            <MonitorSmartphone className="h-5 w-5" />
           </>
         ) : (
           <>
+            <Code2 />
             Code
-            <Code2 className="h-5 w-5" />
           </>
         )}
       </Button>
       <Button
+        variant="light"
+        size="xs"
         onClick={() => {
           const content =
             selected === 0
@@ -92,16 +91,16 @@ export default function ProjectDesign(props: ProjectDesignProps) {
               : props.subProjects?.[selected - 1]?.result;
           if (content) downloadHTML(content);
         }}
-        className="aspect-square h-[34px] gap-2 p-1"
+        className="aspect-square gap-2 p-1"
       >
-        <Download className="h-5 w-5" />
+        <Download />
       </Button>
     </div>
   );
 
   const subHistory = props.subProjects?.map((subProject) => ({
     id: subProject.id,
-    prompt: subProject.content,
+    prompt: subProject?.prompt,
     isSubProject: true,
     ready: true,
   })) as ProjectHistory[];
@@ -109,7 +108,7 @@ export default function ProjectDesign(props: ProjectDesignProps) {
   const history: ProjectHistory[] = [
     {
       id: props.project.id,
-      prompt: props.project.content,
+      prompt: props.project.prompt,
       isSubProject: false,
       ready: true,
     },
@@ -121,7 +120,7 @@ export default function ProjectDesign(props: ProjectDesignProps) {
     result?: string;
     url?: string;
   } = {
-    url: selected === 0 ? "/api/preview/" : `/api/preview/sub/`,
+    url: "/api/preview/",
     id:
       selected === 0 ? props.project.id : props.subProjects?.[selected - 1]?.id,
     result:
@@ -132,7 +131,7 @@ export default function ProjectDesign(props: ProjectDesignProps) {
 
   return (
     <div className="w-full space-y-2">
-      <FirstPrompt firstPrompt={props.project.content} />
+      <FirstPrompt firstPrompt={props.project.prompt} />
       <div className="grid w-full items-center gap-4 lg:h-[calc(100vh-160px)] lg:grid-cols-[300px_1fr_300px]">
         <div className="hidden lg:block" />
         <div className="h-[calc(100vh-160px)] w-full">

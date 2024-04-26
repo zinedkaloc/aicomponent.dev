@@ -1,13 +1,13 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
 import { useState, FormEvent, useRef } from "react";
-import LoadingSpinner from "@/components/loadingSpinner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import DeleteAccountConfirmDialog from "@/components/DeleteAccountConfirmDialog";
 import NavLink from "@/components/NavLink";
 import { actionWrapper, updateAuthUser } from "@/lib/actions";
 import { toast } from "sonner";
+import Spinner from "@/components/Spinner";
 
 let toastId: string | number = 0;
 
@@ -84,7 +84,7 @@ export default function ProfileSettings() {
                 type="submit"
                 variant="default"
               >
-                {loading && <LoadingSpinner />}
+                {loading && <Spinner />}
                 <p>Save Changes</p>
               </Button>
             </div>

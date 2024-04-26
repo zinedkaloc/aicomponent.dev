@@ -5,7 +5,7 @@ import { env } from "@/env";
 
 export async function middleware(request: NextRequest) {
   let path = request.nextUrl.pathname;
-  const PROTECTED_PATHS = ["/profile", "/projects"];
+  const PROTECTED_PATHS = ["/profile", "/projects", "/start-building"];
   const session = cookies().has("sessionToken");
 
   const isProtectedPage = PROTECTED_PATHS.some((protectedPath) =>

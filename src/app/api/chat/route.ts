@@ -1,9 +1,8 @@
 import { Configuration, OpenAIApi } from "openai-edge";
 
 import { OpenAIStream, StreamingTextResponse } from "ai";
-import Agnost from "@/lib/agnost";
 import { env } from "@/env";
-import { createProject, updateProject } from "@/lib/actions";
+import { actionWrapper, createProject, updateProject } from "@/lib/actions";
 import { z } from "zod";
 import { authWrapper, badRequest, json } from "@/app/api";
 
@@ -11,56 +10,7 @@ const config = new Configuration({
   apiKey: env.OPENAI_API_KEY,
 });
 
-const openai = new OpenAIApi(config);
-
-const scheme = z.object({
-  projectId: z.number().optional(),
-  channelId: z.string(),
-  messages: z.array(
-    z.object({
-      role: z.enum(["user", "system"]),
-      content: z.string(),
-    }),
-  ),
-});
-
-export const POST = authWrapper(async (req: Request, { user }) => {
-  const { realtime } = Agnost.getServerClient();
-
-  if (user.credits === 0) {
-    return json({ code: "no-credits", message: "No credits available" });
-  }
-
-  const parsed = scheme.safeParse(await req.json());
-  if (!parsed.success) {
-    return badRequest(parsed.error.flatten());
-  }
-
-  const { messages, channelId, projectId } = parsed.data;
-
-  const { content } = messages
-    .filter((m: { role: string }) => m.role === "user")
-    .at(-1)!;
-
-  const projectCreation = await createProject({
-    content,
-    parent: projectId,
-  });
-
-  if (!projectCreation.success) {
-    return badRequest({
-      message: "Failed to create project",
-    });
-  }
-
-  const { data: project } = projectCreation;
-
-  realtime.send(channelId, !projectId ? "projectId" : "subProjectId", {
-    id: project.id,
-    prompt: content,
-  });
-
-  const systemPrompt = `You've been entrusted as the lead designer to architect a striking and engaging design system using Tailwind CSS and Alpine.js for a state-of-the-art application. The goal is to build a design system that ensures rapid and consistent development of UI components for our application, captivating users with their visual appeal and functionality.
+const systemPrompt = `You've been entrusted as the lead designer to architect a striking and engaging design system using Tailwind CSS and Alpine.js for a state-of-the-art application. The goal is to build a design system that ensures rapid and consistent development of UI components for our application, captivating users with their visual appeal and functionality.
 
 Your task is to craft a system that generates exquisite designs for various UI elements based on user-provided element names. This system should handle not only the creation of the component but also cover its potential states (e.g., default, focus, active, disabled) and sizes (small, medium, large). Each component should be imbued with dynamic behavior utilizing the declarative power of Alpine.js.
 
@@ -79,17 +29,55 @@ Upon completion, furnish the HTML code with the necessary CDN links for Tailwind
 Refrain from using custom SVG icons. Abstain from custom SVG insignias. Use only colors black and white if you need to use colors.
 Remember use Fontawesome icons, Tailwind CSS classes, and Alpine.js for styling. Use a CDN to include Tailwind CSS and appropriate Fontawesome classes for any icons. 
 
+for tailwind css use this script: <script src="https://cdn.tailwindcss.com"></script> in the head tag, and do not use any other cdn service for tailwind css.
+
 Don't give any descriptive text. Start with <!DOCTYPE html> and end with </html>.`;
+
+const openai = new OpenAIApi(config);
+
+const scheme = z.object({
+  projectId: z.number().optional(),
+  channelId: z.string(),
+  messages: z.array(
+    z.object({
+      role: z.enum(["user", "system", "assistant"]),
+      content: z.string(),
+    }),
+  ),
+});
+
+export const POST = authWrapper(async (req: Request, { user }) => {
+  if (user.credits === 0) {
+    return json({ code: "no-credits", message: "No credits available" });
+  }
+
+  const parsed = scheme.safeParse(await req.json());
+  if (!parsed.success) {
+    return badRequest(parsed.error.flatten());
+  }
+
+  const { messages, channelId, projectId } = parsed.data;
+
+  const { content } = messages
+    .filter((m: { role: string }) => m.role === "user")
+    .at(-1)!;
+
+  const project = await actionWrapper(
+    createProject(
+      {
+        prompt: content,
+        parent: projectId,
+      },
+      channelId,
+    ),
+  );
 
   const combinedMessages = [
     ...messages,
     { role: "system", content: systemPrompt },
   ];
 
-  let response;
-  let stream;
-
-  response = await openai.createChatCompletion({
+  const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo-16k",
     messages: combinedMessages.map((message: any) => ({
       role: message.role,
@@ -98,7 +86,7 @@ Don't give any descriptive text. Start with <!DOCTYPE html> and end with </html>
     stream: true,
   });
 
-  stream = OpenAIStream(response, {
+  const stream = OpenAIStream(response, {
     onFinal: (data) => {
       updateProject(project.id, { result: data, status: "draft" });
     },
