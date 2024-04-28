@@ -41,6 +41,7 @@
     "react-select": "^5.8.0",
     "react-syntax-highlighter": "^15.5.0",
     "sonner": "^1.4.41",
+    "stripe": "^15.4.0",
     "tailwind-merge": "^2.3.0",
     "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss-animate": "^1.0.7",

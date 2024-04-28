@@ -77,6 +77,8 @@ export const POST = authWrapper(async (req: Request, { user }) => {
     { role: "system", content: systemPrompt },
   ];
 
+  const start = Date.now();
+
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo-16k",
     messages: combinedMessages.map((message: any) => ({
@@ -88,7 +90,8 @@ export const POST = authWrapper(async (req: Request, { user }) => {
 
   const stream = OpenAIStream(response, {
     onFinal: (data) => {
-      updateProject(project.id, { result: data, status: "draft" });
+      const duration = Date.now() - start;
+      updateProject(project.id, { result: data, status: "draft" }, duration);
     },
   });
   return new StreamingTextResponse(stream);

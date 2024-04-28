@@ -38,13 +38,9 @@ import useSocket from "@/hooks/useSocket";
 const theme = githubGist;
 
 export default function Generate() {
-  const { user, setUser } = useAuth();
+  const { user, refetchUser } = useAuth();
   const { replace } = useRouter();
   const { connected, realtime } = useSocket();
-
-  useEffect(() => {
-    console.log({ connected });
-  }, [connected]);
 
   const { set, get, has, deleteByKey } = useSearchParams();
 
@@ -101,9 +97,9 @@ export default function Generate() {
     initialInput: prompt,
     onResponse: (message) => {
       setHasNoCreditsError(false);
-      decreaseCredit();
     },
     onFinish: async (message: Message) => {
+      refetchUser();
       const subProjectId = sessionStorage.getItem("subProjectId")
         ? Number(sessionStorage.getItem("subProjectId"))
         : undefined;
@@ -115,7 +111,6 @@ export default function Generate() {
       const id = subProjectId ?? projectId;
       try {
         const res = JSON.parse(message.content) as { credits: number };
-        setCredits(res.credits);
         setHasNoCreditsError(res.credits === 0);
       } catch {
         setHistory((projects) => {
@@ -217,18 +212,6 @@ export default function Generate() {
   function onFocusHandler() {
     if (!user) {
       set("authModal", "true");
-    }
-  }
-
-  function decreaseCredit(by: number = 1) {
-    if (user) {
-      setUser({ ...user, credits: user.credits - by });
-    }
-  }
-
-  function setCredits(credits: number) {
-    if (user) {
-      setUser({ ...user, credits });
     }
   }
 

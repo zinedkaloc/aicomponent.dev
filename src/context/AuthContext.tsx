@@ -69,8 +69,8 @@ export const AuthProvider = ({ user, children }: AuthProviderProps) => {
       );
       if (redirect) {
         replace(redirect);
-        refresh();
       }
+      refresh();
     } catch (errors) {
       console.error(errors);
       toast.error("Failed to sign out, please try again.");

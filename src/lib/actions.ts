@@ -2,12 +2,53 @@
 
 import Agnost from "@/lib/agnost";
 import { cookies } from "next/headers";
-import { Project, User } from "@/types";
+import { PriceListResponse, Project, User } from "@/types";
 import type { APIError } from "@agnost/client";
+import { z } from "zod";
+import { env } from "@/env";
 
 export type ActionReturn<T> = Promise<
   { success: true; data: T } | { success: false; errors: APIError }
 >;
+
+const CreateCheckoutSessionScheme = z.object({
+  priceId: z.string(),
+  sessionMode: z.enum(["subscription", "payment"]).default("payment"),
+  metadata: z.record(z.string(), z.any()).optional(),
+});
+
+type CreateCheckoutSessionParams = z.infer<typeof CreateCheckoutSessionScheme>;
+
+export async function createCheckoutSession(
+  params: CreateCheckoutSessionParams,
+): ActionReturn<any> {
+  const client = Agnost.getServerClient(cookies());
+  const { errors, data } = await client.endpoint.post("/checkout-session", {
+    mode: process.env.NODE_ENV === "production" ? "PRODUCTION" : "TEST",
+    ...params,
+    cancel_url: env.CANCEL_URL,
+    success_url: env.SUCCESS_URL,
+  });
+  if (errors) {
+    console.error(errors);
+    return { success: false, errors };
+  }
+  return { success: true, data };
+}
+
+export async function getPricingData(): ActionReturn<PriceListResponse> {
+  const client = Agnost.getServerClient();
+  const { errors, data } = await client.endpoint.get(
+    `/pricing?${new URLSearchParams({ mode: env.NODE_ENV === "production" ? "PRODUCTION" : "TEST" })}`,
+  );
+
+  if (errors) {
+    console.error(errors);
+    return { success: false, errors };
+  }
+
+  return { success: true, data };
+}
 
 export async function updateAuthUser(user: Partial<User>): ActionReturn<User> {
   const client = Agnost.getServerClient(cookies());
@@ -93,12 +134,13 @@ export async function createProject(
 export async function updateProject(
   id: number,
   data: Omit<Partial<Project>, "id">,
+  duration: number,
 ): ActionReturn<Project> {
   const client = Agnost.getServerClient(cookies());
 
   const { errors, data: project } = await client.endpoint.put(
     `/projects/${id}`,
-    data,
+    { ...data, duration },
   );
 
   if (errors) {
@@ -146,3 +188,8 @@ export async function actionWrapper<T>(action: ActionReturn<T>) {
 
   return result.data;
 }
+
+// Webhook Error: No signatures found matching the expected signature for payload. Are you passing the raw request body you received from Stripe?
+//  If a webhook request is being forwarded by a third-party tool, ensure that the exact request body, including JSON formatting and new line style, is preserved.
+// Learn more about webhook signing and explore webhook integration examples for various frameworks at https://github.com/stripe/stripe-node#webhook-signing
+// ,

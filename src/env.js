@@ -7,6 +7,9 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
+    RETURN_URL: z.string().url().optional(),
+    CANCEL_URL: z.string().url(),
+    SUCCESS_URL: z.string().url(),
     OPENAI_API_KEY: z.string().min(1),
     AGNOST_SERVER_API_KEY: z.string().min(1),
     NODE_ENV: z
@@ -30,6 +33,9 @@ export const env = createEnv({
    * middlewares) or client-side, so we need to destruct manually.
    */
   runtimeEnv: {
+    RETURN_URL: process.env.RETURN_URL,
+    CANCEL_URL: process.env.CANCEL_URL,
+    SUCCESS_URL: process.env.SUCCESS_URL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     AGNOST_SERVER_API_KEY: process.env.AGNOST_SERVER_API_KEY,
     NODE_ENV: process.env.NODE_ENV,

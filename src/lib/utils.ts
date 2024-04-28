@@ -2,6 +2,10 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { Project } from "@/types";
 
+export function numberFormat(number: number) {
+  return new Intl.NumberFormat("en-US").format(number);
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

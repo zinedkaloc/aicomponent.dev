@@ -5,6 +5,7 @@ import useSearchParams from "@/hooks/useSearchParams";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/Spinner";
+import { actionWrapper, createCheckoutSession } from "@/lib/actions";
 
 interface ProductProps {
   product: any;
@@ -18,18 +19,14 @@ export default function Product({ product, className }: ProductProps) {
   async function getPaymentLink(priceId: string) {
     if (!user) return set("authModal", "true");
 
-    try {
-      setLoading(true);
-      const res = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        body: JSON.stringify({ priceId }),
-      });
+    const data = await actionWrapper(
+      createCheckoutSession({
+        priceId,
+        sessionMode: "payment",
+      }),
+    );
 
-      const { url } = await res.json();
-      location.href = url;
-    } catch (e) {
-      setLoading(false);
-    }
+    console.log(data);
   }
 
   return (

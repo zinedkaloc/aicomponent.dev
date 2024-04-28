@@ -1,11 +1,19 @@
 "use client";
 import useSearchParams from "@/hooks/useSearchParams";
 import { useAuth } from "@/context/AuthContext";
-import UserDropdown from "@/components/UserDropdown";
 import Logo from "@/components/Logo";
 import { useParams, usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn, numberFormat } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import UserAvatar from "@/components/UserAvatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/Tooltip";
+import { Coins } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default function Header() {
   const { set } = useSearchParams();
@@ -36,7 +44,25 @@ export default function Header() {
           )}
         >
           {user ? (
-            <UserDropdown />
+            <div className="flex items-center gap-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge
+                      className="select-none gap-1 font-medium"
+                      variant={user.credits < 10 ? "destructive" : "default"}
+                    >
+                      <Coins size={12} />
+                      {numberFormat(user.credits)}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-foreground text-xs text-background">
+                    You have {numberFormat(user.credits)} credits left.
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <UserAvatar withDropdown />
+            </div>
           ) : (
             <div className="flex gap-0.5">
               <Button

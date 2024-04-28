@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { usePrompt } from "@/hooks/usePrompt";
 import Spinner from "@/components/Spinner";
 import { useAuth } from "@/context/AuthContext";
+import useSearchParams from "@/hooks/useSearchParams";
 
 interface Props {
   className?: string;
@@ -18,7 +19,7 @@ export default function SubmissionForm(props: Props) {
   const { user } = useAuth();
   const [loading, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
-
+  const { set } = useSearchParams();
   const setPrompt = usePrompt((state) => state.setPrompt);
   const generateChannelId = usePrompt((state) => state.generateChannelId);
   const prompt = usePrompt((state) => state.prompt);
@@ -33,6 +34,11 @@ export default function SubmissionForm(props: Props) {
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!user) {
+      return set("authModal", "true");
+    }
+
     if (prompt?.trim()?.length === 0 || !user) return;
 
     if (user?.credits < 10) {

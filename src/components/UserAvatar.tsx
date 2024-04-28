@@ -36,21 +36,10 @@ interface UserAvatarProps {
 }
 
 export default function UserAvatar({ withDropdown }: UserAvatarProps) {
-  const { replace } = useRouter();
-  const { user, logout: signOut } = useAuth();
+  const { user, logout } = useAuth();
   const { setTheme, theme: currentTheme } = useTheme();
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   const themes = ["light", "dark", "system"];
-
-  async function logout() {
-    try {
-      signOut();
-    } catch (e) {
-      console.error(e);
-      toast.error("Something went wrong, please try again.");
-    }
-  }
 
   const DROPDOWN_ITEMS = [
     [
@@ -65,12 +54,6 @@ export default function UserAvatar({ withDropdown }: UserAvatarProps) {
         onClick: undefined,
         href: "/buy-credits",
         label: "Buy Credits",
-      },
-      {
-        icon: <Newspaper size={16} />,
-        onClick: undefined,
-        href: "/blog",
-        label: "Blog",
       },
     ],
     [
@@ -88,7 +71,7 @@ export default function UserAvatar({ withDropdown }: UserAvatarProps) {
       },
       {
         icon: <LogOut size={16} />,
-        onClick: logout,
+        onClick: () => logout("/"),
         href: undefined,
         label: "Log out",
       },
@@ -119,7 +102,7 @@ export default function UserAvatar({ withDropdown }: UserAvatarProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-48 min-w-[16rem] origin-top-right rounded-xl border-border bg-background p-0 shadow-none"
+        className="w-44 min-w-[15rem] origin-top-right rounded-xl border-border bg-background p-0 shadow-none"
         align="end"
       >
         <DropdownMenuGroup className="bg-gray-50/60 p-4">

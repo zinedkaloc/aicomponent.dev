@@ -62,3 +62,40 @@ declare global {
     agnost: AgnostClient;
   }
 }
+
+export interface Price {
+  id: string;
+  object: string;
+  active: boolean;
+  billing_scheme: string;
+  created: number;
+  currency: string;
+  custom_unit_amount: null | number;
+  livemode: boolean;
+  lookup_key: null | string;
+  metadata: {
+    amount: string;
+  };
+  nickname: null | string;
+  product: string;
+  recurring: null | any;
+  tax_behavior: string;
+  tiers_mode: null | string;
+  transform_quantity: null | string;
+  type: string;
+  unit_amount: number;
+  unit_amount_decimal: string;
+}
+
+export interface PriceListResponse {
+  object: string;
+  data: Price[];
+  has_more: boolean;
+  url: string;
+}
+
+export interface PriceMetadata {
+  amount: string;
+  name: string;
+  description: string;
+}
