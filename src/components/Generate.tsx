@@ -1,6 +1,6 @@
 "use client";
 
-import { useDebounce } from "@uidotdev/usehooks";
+import { useDebounce, useThrottle } from "@uidotdev/usehooks";
 import BrowserWindow from "@/components/BrowserWindow";
 import { Button } from "@/components/ui/button";
 import {
@@ -63,14 +63,10 @@ export default function Generate() {
   const [rated, setRated] = useState(false);
   const selected = Number(get("selected") ?? 0);
 
-  const debounceContent = useDebounce(iframeContent, 300);
+  const debounceContent = useThrottle(iframeContent, 300);
 
   useEffect(() => {
-    if (!prompt) {
-      return replace("/");
-    }
-
-    if (!connected) return;
+    if (!connected || !prompt) return;
 
     handleSubmit(new Event("submit") as unknown as FormEvent<HTMLFormElement>);
     deleteByKey("selected");
@@ -79,7 +75,17 @@ export default function Generate() {
     return () => {
       setPrompt(undefined);
     };
-  }, [connected]);
+  }, [connected, prompt]);
+
+  useEffect(() => {
+    if (!prompt) {
+      return replace("/");
+    }
+
+    return () => {
+      setPrompt(undefined);
+    };
+  }, []);
 
   const {
     messages,
