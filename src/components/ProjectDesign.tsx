@@ -132,12 +132,12 @@ export default function ProjectDesign(props: ProjectDesignProps) {
   return (
     <div className="w-full space-y-2">
       <FirstPrompt firstPrompt={props.project.prompt} />
-      <div className="grid w-full items-center gap-4 lg:h-[calc(100vh-160px)] lg:grid-cols-[300px_1fr_300px]">
+      <div className="grid w-full items-center gap-4 md:grid-cols-[300px_1fr_300px] lg:h-[--full-height]">
         <div className="hidden lg:block" />
-        <div className="h-[calc(100vh-160px)] w-full">
+        <div className="h-[--full-height] w-full">
           <BrowserWindow
             contentClassName="bg-white overflow-auto"
-            className="h-[calc(100vh-160px)]"
+            className="h-[--full-height]"
             header={HeaderButtons}
           >
             {selectedComponent.result && (

@@ -16,6 +16,10 @@ export interface User {
   email_verified: boolean;
   created_at: string;
   updated_at: string;
+  promotion_code_test: string;
+  stripe_test_customer_id: string;
+  promotion_code: string;
+  stripe_customer_id: string;
 }
 
 export interface Project {
@@ -37,8 +41,10 @@ export interface Project {
 export interface Payment {
   id: string;
   hosted_invoice_url: string;
+  stripe_customer_id: string;
   invoice_pdf: string;
   is_test: boolean;
+  total_amount: number;
   created_by: number | User;
   project?: number | Project;
   stripe_price_id: string;
@@ -46,7 +52,6 @@ export interface Payment {
   updated_at: string;
   created_at: string;
   metadata: Record<string, any>;
-  amount: number;
 }
 
 export type ProjectHistory = {

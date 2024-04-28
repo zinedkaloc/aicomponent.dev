@@ -38,7 +38,7 @@ export default function History({
     <div
       ref={historyRef}
       className={cn(
-        "mb-4 flex gap-2 overflow-auto lg:mb-0 lg:h-[calc(100vh-160px)] lg:flex-col",
+        "mb-4 flex gap-2 overflow-auto lg:mb-0 lg:h-[--full-height] lg:flex-col",
         className,
       )}
     >

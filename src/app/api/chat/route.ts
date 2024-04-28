@@ -29,7 +29,7 @@ Upon completion, furnish the HTML code with the necessary CDN links for Tailwind
 Refrain from using custom SVG icons. Abstain from custom SVG insignias. Use only colors black and white if you need to use colors.
 Remember use Fontawesome icons, Tailwind CSS classes, and Alpine.js for styling. Use a CDN to include Tailwind CSS and appropriate Fontawesome classes for any icons. 
 
-for tailwind css use this script: <script src="https://cdn.tailwindcss.com"></script> in the head tag, and do not use any other cdn service for tailwind css.
+for tailwind css use this JavaScript script "<script src="https://cdn.tailwindcss.com"></script>" in the head tag, and do not use any other cdn service for tailwind css.
 
 Don't give any descriptive text. Start with <!DOCTYPE html> and end with </html>.`;
 

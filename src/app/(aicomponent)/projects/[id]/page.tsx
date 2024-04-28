@@ -19,7 +19,7 @@ export default async function ProjectDetail({ params }: Props) {
   const project = await actionWrapper(getProjectById(+params.id));
 
   return (
-    <div className="flex min-h-[calc(100vh-72px)] w-full flex-col items-center px-4 pt-6 md:px-14">
+    <div className="flex min-h-[--full-height] w-full flex-col items-center px-4 pt-6 md:px-14">
       {project?.result ? (
         <ProjectDesign project={project} subProjects={[]} />
       ) : (

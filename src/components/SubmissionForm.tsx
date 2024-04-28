@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ArrowUp, CornerDownLeft, MoveUpRight } from "lucide-react";
+import { ArrowUp, CircleAlert, MoveUpRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useTransition } from "react";
@@ -14,6 +14,8 @@ import useSearchParams from "@/hooks/useSearchParams";
 interface Props {
   className?: string;
 }
+
+let toastId: string | number;
 
 export default function SubmissionForm(props: Props) {
   const { user } = useAuth();
@@ -41,15 +43,23 @@ export default function SubmissionForm(props: Props) {
 
     if (prompt?.trim()?.length === 0 || !user) return;
 
-    if (user?.credits < 10) {
-      return toast.error(
-        <div>
-          You do not have enough credits to use this feature{" "}
-          <Link target="_blank" className="underline" href="/buy-credits">
-            Buy credits
-          </Link>
+    if (user?.credits < 5) {
+      toast.dismiss(toastId);
+      toastId = toast.error(
+        <div className="flex w-fit gap-2">
+          <CircleAlert className="mt-1 size-5" />
+          <div>
+            You do not have enough credits to generate. <br />
+            <Link target="_blank" className="underline" href="/buy-credits">
+              Buy credits
+            </Link>
+          </div>
         </div>,
+        {
+          className: "w-fit",
+        },
       );
+      return;
     }
 
     startTransition(() => {
@@ -92,7 +102,11 @@ export default function SubmissionForm(props: Props) {
 
                 <Button type="submit" size="icon-sm" className="rounded-lg">
                   <span className="sr-only">Send</span>
-                  {loading ? <Spinner /> : <ArrowUp className="!size-4" />}
+                  {loading ? (
+                    <Spinner className="!size-4" />
+                  ) : (
+                    <ArrowUp className="!size-4" />
+                  )}
                 </Button>
               </div>
             </form>

@@ -3,7 +3,7 @@ import UserAvatar from "@/components/UserAvatar";
 
 export default function FirstPrompt(props: { firstPrompt: string }) {
   return (
-    <div className="grid w-full gap-4 lg:grid-cols-[300px_1fr_300px]">
+    <div className="grid w-full gap-4 md:grid-cols-[300px_1fr_300px]">
       <div className="hidden lg:block" />
       <div className="flex items-center gap-3">
         <UserAvatar />

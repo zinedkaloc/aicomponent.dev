@@ -34,7 +34,10 @@ export default function ConfirmDialog({
     <AlertDialog>
       <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
       <AlertDialogContent className="w-[95%] max-w-[450px] gap-0 overflow-hidden rounded-2xl border border-gray-100 p-0 shadow-xl">
-        <AlertDialogCancel className="absolute right-4 top-4 z-50 text-gray-500 transition-colors hover:text-black focus:outline-none">
+        <AlertDialogCancel
+          size="icon-sm"
+          className="absolute right-4 top-4 z-50 [&>svg]:size-4"
+        >
           <XIcon />
         </AlertDialogCancel>
         {children && (
@@ -53,13 +56,9 @@ export default function ConfirmDialog({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel asChild>
-                <Button>Cancel</Button>
-              </AlertDialogCancel>
-              <AlertDialogAction asChild>
-                <Button onClick={onConfirm} variant="destructive">
-                  Delete
-                </Button>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={onConfirm} variant="destructive">
+                Delete
               </AlertDialogAction>
             </AlertDialogFooter>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useEffect } from "react";
 import type { User } from "@/types";
 import { actionWrapper, getAuthUser, signOut } from "@/lib/actions";
 import { toast } from "sonner";
@@ -36,26 +36,25 @@ export const AuthProvider = ({ user, children }: AuthProviderProps) => {
   const queryClient = useQueryClient();
   const { replace, refresh } = useRouter();
 
-  const { data: _user } = useQuery({
+  const { data: _user, refetch } = useQuery({
     queryKey: ["authUser"],
     initialData: user,
-    staleTime: 15_000,
+    staleTime: 0,
+    gcTime: 0,
+    refetchInterval: 15_000,
     refetchOnReconnect: true,
+    refetchIntervalInBackground: true,
+    refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: () => actionWrapper(getAuthUser()),
   });
 
   function refetchUser() {
-    queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    refetch().catch(console.log);
   }
 
   function setAuthUser(user?: User | null) {
-    queryClient.setQueriesData(
-      {
-        queryKey: ["authUser"],
-      },
-      user,
-    );
+    queryClient.setQueryData(["authUser"], user);
   }
 
   async function logout(redirect?: string) {

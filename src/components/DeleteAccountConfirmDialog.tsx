@@ -17,6 +17,7 @@ export default function DeleteAccountConfirmDialog() {
     try {
       setDeleting(true);
       await actionWrapper(deleteProfile());
+      window.location.href = "/";
     } catch (errors) {
       console.log(errors);
       toast.error("Failed to delete account, please try again.");

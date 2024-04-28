@@ -365,7 +365,7 @@ export default function Generate() {
         {!hasNoCreditsError && (
           <section className="w-full space-y-2">
             {firstPrompt && <FirstPrompt firstPrompt={firstPrompt} />}
-            <div className="grid w-full items-center gap-4 lg:h-[calc(100vh-160px)] lg:grid-cols-[300px_1fr_300px]">
+            <div className="grid w-full gap-4 lg:h-[calc(100vh-160px)] lg:grid-cols-[300px_1fr_300px]">
               <div className="hidden lg:block" />
               <div className="grid h-[calc(100vh-160px)] w-full grid-rows-[1fr_auto] space-y-2.5">
                 <BrowserWindow

@@ -2,10 +2,12 @@
 
 import Agnost from "@/lib/agnost";
 import { cookies } from "next/headers";
-import { PriceListResponse, Project, User } from "@/types";
+import { Payment, PriceListResponse, Project, User } from "@/types";
 import type { APIError } from "@agnost/client";
 import { z } from "zod";
 import { env } from "@/env";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export type ActionReturn<T> = Promise<
   { success: true; data: T } | { success: false; errors: APIError }
@@ -18,6 +20,16 @@ const CreateCheckoutSessionScheme = z.object({
 });
 
 type CreateCheckoutSessionParams = z.infer<typeof CreateCheckoutSessionScheme>;
+
+export async function actionWrapper<T>(action: ActionReturn<T>) {
+  const result = await action;
+
+  if (!result.success) {
+    throw result.errors;
+  }
+
+  return result.data;
+}
 
 export async function createCheckoutSession(
   params: CreateCheckoutSessionParams,
@@ -179,17 +191,23 @@ export async function getProjectById(id: number): ActionReturn<Project> {
   return { success: true, data: project as Project };
 }
 
-export async function actionWrapper<T>(action: ActionReturn<T>) {
-  const result = await action;
-
-  if (!result.success) {
-    throw result.errors;
+export async function getPayments(): ActionReturn<Payment[]> {
+  const client = Agnost.getServerClient(cookies());
+  const { errors, data } = await client.endpoint.get("/invoices");
+  if (errors) {
+    console.error(errors);
+    return { success: false, errors };
   }
-
-  return result.data;
+  return { success: true, data };
 }
 
-// Webhook Error: No signatures found matching the expected signature for payload. Are you passing the raw request body you received from Stripe?
-//  If a webhook request is being forwarded by a third-party tool, ensure that the exact request body, including JSON formatting and new line style, is preserved.
-// Learn more about webhook signing and explore webhook integration examples for various frameworks at https://github.com/stripe/stripe-node#webhook-signing
-// ,
+export async function deleteProject(id: number): ActionReturn<undefined> {
+  const client = Agnost.getServerClient(cookies());
+  const { errors } = await client.endpoint.delete(`/projects/${id}`);
+  if (errors) {
+    console.error(errors);
+    return { success: false, errors };
+  }
+  revalidatePath("/projects");
+  return { success: true, data: undefined };
+}

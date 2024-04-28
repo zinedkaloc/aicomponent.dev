@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Project } from "@/types";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useWindowSize } from "@uidotdev/usehooks";
 import DeleteProjectConfirmDialog from "@/components/DeleteProjectConfirmDialog";
 import { cn, dateFormat } from "@/lib/utils";
@@ -29,6 +29,7 @@ function ProjectItem({ project }: { project: Project }) {
   const scale = 0.4;
   const parentRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowSize();
+  const [deleted, setDeleted] = useState(false);
 
   const parentWidth = useMemo(() => {
     return parentRef?.current?.getBoundingClientRect().width as number;
@@ -37,6 +38,8 @@ function ProjectItem({ project }: { project: Project }) {
   const parentHeight = useMemo(() => {
     return parentRef?.current?.getBoundingClientRect().height as number;
   }, [width, parentRef]);
+
+  if (deleted) return null;
 
   return (
     <Link
@@ -51,7 +54,13 @@ function ProjectItem({ project }: { project: Project }) {
         }}
         className="absolute right-2 top-2 z-10 hidden group-hover:block"
       >
-        <DeleteProjectConfirmDialog project={project} />
+        <DeleteProjectConfirmDialog
+          onDelete={() => {
+            setDeleted(true);
+            console.log("deleted");
+          }}
+          project={project}
+        />
       </div>
       <div
         ref={parentRef}
