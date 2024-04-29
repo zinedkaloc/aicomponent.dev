@@ -27,10 +27,6 @@ export default function Header() {
     set("authModal", "true");
   }
 
-  function openPricesModal() {
-    set("pricesModal", "true");
-  }
-
   return (
     <header className="w-full border-b px-6">
       <div className="flex h-full items-center justify-between">

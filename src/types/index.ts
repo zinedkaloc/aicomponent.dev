@@ -10,6 +10,7 @@ export interface User {
   phone: string;
   phone_verified: boolean;
   profile_picture: string;
+  profilepicture: string;
   provider: string;
   provider_user_id: string;
   signup_at: string;

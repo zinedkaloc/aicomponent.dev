@@ -15,20 +15,10 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Check,
-  Coins,
-  Layout,
-  LogOut,
-  Newspaper,
-  Receipt,
-  User,
-} from "lucide-react";
+import { Check, Coins, Layout, LogOut, Receipt, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { Fragment, useState } from "react";
-import { toast } from "sonner";
+import { Fragment } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 interface UserAvatarProps {
@@ -84,7 +74,7 @@ export default function UserAvatar({ withDropdown }: UserAvatarProps) {
     <Avatar
       className={cn("h-8 w-8 select-none", withDropdown && "cursor-pointer")}
     >
-      <AvatarImage alt={user?.name!} src={user?.profile_picture} />
+      <AvatarImage alt={user?.name!} src={user?.profilepicture} />
       <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
     </Avatar>
   );
