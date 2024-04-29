@@ -367,6 +367,7 @@ export default function Generate() {
                       </div>
 
                       <Button
+                        disabled={isLoading}
                         type="submit"
                         size="icon-sm"
                         className="rounded-lg"

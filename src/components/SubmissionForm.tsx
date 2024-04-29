@@ -99,7 +99,12 @@ export default function SubmissionForm(props: Props) {
                   />
                 </div>
 
-                <Button type="submit" size="icon-sm" className="rounded-lg">
+                <Button
+                  disabled={loading}
+                  type="submit"
+                  size="icon-sm"
+                  className="rounded-lg"
+                >
                   <span className="sr-only">Send</span>
                   {loading ? (
                     <Spinner className="!size-4" />
