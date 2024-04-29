@@ -19,7 +19,6 @@ import useSearchParams from "@/hooks/useSearchParams";
 import { type Message, useChat } from "ai/react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { githubGist } from "react-syntax-highlighter/dist/cjs/styles/hljs";
-import NoCredits from "@/components/NoCredits";
 import type { Project, ProjectHistory } from "@/types";
 import History from "@/components/History";
 import FirstPrompt from "@/components/FirstPrompt";
@@ -48,7 +47,6 @@ export default function Generate() {
   const prompt = usePrompt((state) => state.prompt);
   const setPrompt = usePrompt((state) => state.setPrompt);
 
-  const [hasNoCreditsError, setHasNoCreditsError] = useState(false);
   const [firstPrompt, setFirstPrompt] = useState<null | string>(null);
   const [codeViewActive, setCodeViewActive] = useState(false);
   const [iframeContent, setIframeContent] = useState<string>();
@@ -94,9 +92,6 @@ export default function Generate() {
       channelId,
     },
     initialInput: prompt,
-    onResponse: (message) => {
-      setHasNoCreditsError(false);
-    },
     onFinish: async (message: Message) => {
       refetchUser();
       const subProjectId = sessionStorage.getItem("subProjectId")
@@ -108,19 +103,14 @@ export default function Generate() {
         : undefined;
 
       const id = subProjectId ?? projectId;
-      try {
-        const res = JSON.parse(message.content) as { credits: number };
-        setHasNoCreditsError(res.credits === 0);
-      } catch {
-        setHistory((projects) => {
-          return projects.map((project) => {
-            if (project.id === id) {
-              return { ...project, ready: true, result: message.content };
-            }
-            return project;
-          });
+      setHistory((projects) => {
+        return projects.map((project) => {
+          if (project.id === id) {
+            return { ...project, ready: true, result: message.content };
+          }
+          return project;
         });
-      }
+      });
     },
   });
 
@@ -152,7 +142,6 @@ export default function Generate() {
   }, [channelId]);
 
   function onConnectHandler() {
-    console.log("connected");
     realtime.on("project", realtimeHandler);
   }
 
@@ -366,45 +355,41 @@ export default function Generate() {
           "px-4 pt-6 md:px-14",
         )}
       >
-        {hasNoCreditsError && <NoCredits />}
-
-        {!hasNoCreditsError && (
-          <section className="w-full space-y-2">
-            {firstPrompt && <FirstPrompt firstPrompt={firstPrompt} />}
-            <div className="grid w-full gap-4 lg:h-[calc(100vh-160px)] lg:grid-cols-[300px_1fr_300px]">
-              <div className="hidden md:block" />
-              <div className="grid h-[calc(100vh-160px)] w-full grid-rows-[1fr_auto] space-y-2.5">
-                <BrowserWindow
-                  contentClassName="bg-white overflow-auto"
-                  header={HeaderButtons}
+        <section className="w-full space-y-2">
+          <FirstPrompt firstPrompt={firstPrompt} />
+          <div className="grid w-full gap-4 lg:h-[calc(100vh-160px)] lg:grid-cols-[300px_1fr_300px]">
+            <div className="hidden md:block" />
+            <div className="grid h-[calc(100vh-160px)] w-full grid-rows-[1fr_auto] space-y-2.5">
+              <BrowserWindow
+                contentClassName="bg-white overflow-auto"
+                header={HeaderButtons}
+              >
+                <SyntaxHighlighter
+                  language="htmlbars"
+                  style={theme}
+                  showLineNumbers
+                  className={cn(codeViewActive ? "!block" : "!hidden")}
                 >
-                  <SyntaxHighlighter
-                    language="htmlbars"
-                    style={theme}
-                    showLineNumbers
-                    className={cn(codeViewActive ? "!block" : "!hidden")}
-                  >
-                    {has("selected")
-                      ? (selectedComponent?.result as string)
-                      : iframeContent ?? ""}
-                  </SyntaxHighlighter>
-                  <iframe
-                    ref={iframeRef}
-                    className={cn(
-                      "h-full w-full",
-                      !codeViewActive ? "block" : "hidden",
-                    )}
-                  />
-                </BrowserWindow>
-                {Form}
-              </div>
-              <History
-                onClick={(index) => replace(`?selected=${index}`)}
-                projects={history}
-              />
+                  {has("selected")
+                    ? (selectedComponent?.result as string)
+                    : iframeContent ?? ""}
+                </SyntaxHighlighter>
+                <iframe
+                  ref={iframeRef}
+                  className={cn(
+                    "h-full w-full",
+                    !codeViewActive ? "block" : "hidden",
+                  )}
+                />
+              </BrowserWindow>
+              {Form}
             </div>
-          </section>
-        )}
+            <History
+              onClick={(index) => replace(`?selected=${index}`)}
+              projects={history}
+            />
+          </div>
+        </section>
       </div>
       <RateModal key={projectId} onRateSubmit={() => setRated(true)} />
     </>
