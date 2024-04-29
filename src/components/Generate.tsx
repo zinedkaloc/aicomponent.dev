@@ -1,6 +1,5 @@
 "use client";
 
-import { useThrottle } from "@uidotdev/usehooks";
 import BrowserWindow from "@/components/BrowserWindow";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +15,7 @@ import RateModal from "@/components/RateModal";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import useSearchParams from "@/hooks/useSearchParams";
-import { type Message, useChat } from "ai/react";
+import { useChat } from "ai/react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { githubGist } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 import type { Project, ProjectHistory } from "@/types";
@@ -47,11 +46,11 @@ export default function Generate() {
   const prompt = usePrompt((state) => state.prompt);
   const setPrompt = usePrompt((state) => state.setPrompt);
 
+  const [lastCreatedProject, setLastCreatedProject] = useState<Project>();
+
   const [firstPrompt, setFirstPrompt] = useState<null | string>(null);
   const [codeViewActive, setCodeViewActive] = useState(false);
   const [iframeContent, setIframeContent] = useState<string>();
-  const [projectId, setProjectId] = useState<number>();
-  const [subProjectId, setSubProjectId] = useState<number>();
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const [history, setHistory] = useState<ProjectHistory[]>([]);
@@ -61,7 +60,13 @@ export default function Generate() {
   const [rated, setRated] = useState(false);
   const selected = Number(get("selected") ?? 0);
 
-  const debounceContent = useThrottle(iframeContent, 400);
+  const { messages, input, setInput, handleSubmit, stop, isLoading } = useChat({
+    body: {
+      projectId: lastCreatedProject?.id,
+      channelId,
+    },
+    initialInput: prompt,
+  });
 
   useEffect(() => {
     if (connected) return;
@@ -86,87 +91,20 @@ export default function Generate() {
     };
   }, []);
 
-  const { messages, input, setInput, handleSubmit, stop, isLoading } = useChat({
-    body: {
-      projectId,
-      channelId,
-    },
-    initialInput: prompt,
-    onFinish: async (message: Message) => {
-      refetchUser();
-      const subProjectId = sessionStorage.getItem("subProjectId")
-        ? Number(sessionStorage.getItem("subProjectId"))
-        : undefined;
-
-      const projectId = sessionStorage.getItem("projectId")
-        ? Number(sessionStorage.getItem("projectId"))
-        : undefined;
-
-      const id = subProjectId ?? projectId;
-      setHistory((projects) => {
-        return projects.map((project) => {
-          if (project.id === id) {
-            return { ...project, ready: true, result: message.content };
-          }
-          return project;
-        });
-      });
-    },
-  });
-
-  async function share() {
-    try {
-      await navigator.clipboard.writeText(
-        `${window.location.origin}/projects/${projectId}?selected=${selected}`,
-      );
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Failed to copy URL to clipboard");
-      setCopied(false);
-    }
-  }
-
   useEffect(() => {
-    if (!channelId) return;
-
+    if (!channelId || !connected) return;
     sessionStorage.clear();
+
     realtime.join(channelId);
-    realtime.onConnect(onConnectHandler);
+    realtime.on("project", realtimeHandler);
+    realtime.on("project_finished", onFinishedHandler);
 
     return () => {
       realtime.off("project", realtimeHandler);
-      realtime.offAny(onConnectHandler);
+      realtime.off("project_finished", onFinishedHandler);
       realtime.leave(channelId);
     };
-  }, [channelId]);
-
-  function onConnectHandler() {
-    realtime.on("project", realtimeHandler);
-  }
-
-  function realtimeHandler({ message }: { message: Project }) {
-    console.log(message);
-    if (message.parent) {
-      setSubProjectId(message.id);
-      sessionStorage.setItem("subProjectId", message.id.toString());
-    } else {
-      setProjectId(message.id);
-      sessionStorage.setItem("projectId", message.id.toString());
-    }
-
-    setHistory((prev) => {
-      return [
-        ...prev,
-        {
-          id: message.id,
-          prompt: message.prompt,
-          ready: false,
-          isSubProject: !!message.parent,
-        },
-      ];
-    });
-  }
+  }, [channelId, connected]);
 
   useEffect(() => {
     const lastProject = history[history.length - 1];
@@ -180,74 +118,87 @@ export default function Generate() {
   }, [history]);
 
   useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage && lastMessage.role !== "user") {
-      setIframeContent(lastMessage.content);
-    }
+    render();
   }, [messages]);
 
-  useEffect(() => {
-    if (!iframeRef.current) return;
-    iframeRef.current.contentDocument?.open();
-    iframeRef.current.contentDocument?.write(debounceContent?.toString() ?? "");
-    iframeRef.current.contentDocument?.close();
-  }, [debounceContent, iframeRef.current]);
+  async function share() {
+    try {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/projects/${lastCreatedProject?.id}?selected=${selected}`,
+      );
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Failed to copy URL to clipboard");
+      setCopied(false);
+    }
+  }
+
+  function onFinishedHandler({ message }: { message: Project }) {
+    console.log("finished", message);
+    refetchUser();
+
+    setHistory((projects) => {
+      return projects.map((project) => {
+        if (project.id === message.id) {
+          project.ready = true;
+          project.result = message.result;
+        }
+        return project;
+      });
+    });
+
+    setIframeContent(message.result);
+
+    setFinished(true);
+  }
+
+  function realtimeHandler({ message }: { message: Project }) {
+    console.log("realtime handler", message);
+    setLastCreatedProject(message);
+    setHistory((prev) => {
+      return [
+        ...prev,
+        {
+          id: message.id,
+          prompt: message.prompt,
+          ready: false,
+          isSubProject: !!message.parent,
+        },
+      ];
+    });
+  }
+
+  function render() {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage && lastMessage.role !== "user") {
+      const dom = new DOMParser().parseFromString(
+        lastMessage.content,
+        "text/html",
+      );
+
+      const link = dom.querySelector("link[src='https://cdn.tailwindcss.com']");
+
+      if (link) {
+        link.insertAdjacentHTML(
+          "afterend",
+          "<script src='https://cdn.tailwindcss.com'></script>",
+        );
+        link.remove();
+      }
+
+      const html = dom.documentElement.outerHTML;
+      setIframeContent(html);
+      iframeRef.current?.contentWindow?.postMessage(html, "*");
+    }
+  }
 
   const handleSave = () => {
     if (iframeContent) downloadHTML(iframeContent);
   };
 
-  const Form = (
-    <>
-      <div className="flex min-h-[3rem] items-center justify-center gap-2 overflow-hidden rounded-xl border bg-transparent px-2 transition focus-within:ring-0 focus-visible:ring-transparent [&:has(input:focus)]:border-black">
-        <div className="flex min-h-[3rem] min-w-0 flex-1 items-center self-end">
-          <form
-            className="w-full"
-            onSubmit={(e) => {
-              handleSubmit(e);
-              deleteByKey("selected");
-              if (!firstPrompt) setFirstPrompt(input);
-            }}
-          >
-            <div className="relative flex h-fit min-h-full w-full items-center transition-all duration-300">
-              <label htmlFor="prompt" className="sr-only">
-                Prompt
-              </label>
-              <div className="relative flex min-w-0 flex-1 self-start">
-                <input
-                  maxLength={1000}
-                  className="min-h-[3rem] min-w-[50%] flex-[1_0_50%] resize-none border-none bg-transparent py-3 pl-3 pr-4 text-base scrollbar-hide focus-visible:outline-none disabled:opacity-80 sm:min-h-[15px] sm:leading-6 md:text-sm"
-                  spellCheck="false"
-                  autoComplete="off"
-                  value={input}
-                  disabled={isLoading}
-                  placeholder={
-                    isLoading
-                      ? "Generating..."
-                      : "Say something to change design"
-                  }
-                  onChange={(event) => setInput(event.target.value)}
-                  style={{ boxShadow: "none" }}
-                />
-              </div>
-
-              <Button type="submit" size="icon-sm" className="rounded-lg">
-                <span className="sr-only">Send</span>
-                {isLoading ? (
-                  <Spinner className="!size-4" />
-                ) : (
-                  <ArrowUp className="!size-4" />
-                )}
-              </Button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </>
-  );
-
   function stopGeneration() {
-    const id = Number(subProjectId ?? projectId);
+    const id = lastCreatedProject?.id;
     stop();
     setHistory((prev) => {
       return prev.filter((p) => p.id !== id);
@@ -375,6 +326,7 @@ export default function Generate() {
                     : iframeContent ?? ""}
                 </SyntaxHighlighter>
                 <iframe
+                  srcDoc={`<script src="https://unpkg.com/alpinejs" defer></script><script src="https://cdn.tailwindcss.com"></script><script>window.addEventListener('message', (event) => { document.body.innerHTML = event.data; });</script>`}
                   ref={iframeRef}
                   className={cn(
                     "h-full w-full",
@@ -382,7 +334,54 @@ export default function Generate() {
                   )}
                 />
               </BrowserWindow>
-              {Form}
+              <div className="flex min-h-[3rem] items-center justify-center gap-2 overflow-hidden rounded-xl border bg-transparent px-2 transition focus-within:ring-0 focus-visible:ring-transparent [&:has(input:focus)]:border-black">
+                <div className="flex min-h-[3rem] min-w-0 flex-1 items-center self-end">
+                  <form
+                    className="w-full"
+                    onSubmit={(e) => {
+                      handleSubmit(e);
+                      deleteByKey("selected");
+                      if (!firstPrompt) setFirstPrompt(input);
+                    }}
+                  >
+                    <div className="relative flex h-fit min-h-full w-full items-center transition-all duration-300">
+                      <label htmlFor="prompt" className="sr-only">
+                        Prompt
+                      </label>
+                      <div className="relative flex min-w-0 flex-1 self-start">
+                        <input
+                          maxLength={1000}
+                          className="min-h-[3rem] min-w-[50%] flex-[1_0_50%] resize-none border-none bg-transparent py-3 pl-3 pr-4 text-base scrollbar-hide focus-visible:outline-none disabled:opacity-80 sm:min-h-[15px] sm:leading-6 md:text-sm"
+                          spellCheck="false"
+                          autoComplete="off"
+                          value={input}
+                          disabled={isLoading}
+                          placeholder={
+                            isLoading
+                              ? "Generating..."
+                              : "Say something to change design"
+                          }
+                          onChange={(event) => setInput(event.target.value)}
+                          style={{ boxShadow: "none" }}
+                        />
+                      </div>
+
+                      <Button
+                        type="submit"
+                        size="icon-sm"
+                        className="rounded-lg"
+                      >
+                        <span className="sr-only">Send</span>
+                        {isLoading ? (
+                          <Spinner className="!size-4" />
+                        ) : (
+                          <ArrowUp className="!size-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
             <History
               onClick={(index) => replace(`?selected=${index}`)}
@@ -391,7 +390,10 @@ export default function Generate() {
           </div>
         </section>
       </div>
-      <RateModal key={projectId} onRateSubmit={() => setRated(true)} />
+      <RateModal
+        key={lastCreatedProject?.id}
+        onRateSubmit={() => setRated(true)}
+      />
     </>
   );
 }

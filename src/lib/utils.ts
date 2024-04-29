@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { Project } from "@/types";
 
 export function numberFormat(number: number) {
   return new Intl.NumberFormat("en-US").format(number);
@@ -30,14 +29,6 @@ export function downloadHTML(content: string) {
   document.body.appendChild(element);
   element.click();
   document.body.removeChild(element);
-}
-
-export async function updateProject(
-  data: Omit<Partial<Project>, "id">,
-  id: number,
-  type: "project" | "sub-project" = "project",
-) {
-  return {};
 }
 
 export function moneyFormat(amount: number) {

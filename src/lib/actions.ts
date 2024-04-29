@@ -146,13 +146,14 @@ export async function createProject(
 export async function updateProject(
   id: number,
   data: Omit<Partial<Project>, "id">,
-  duration: number,
+  duration?: number,
+  channelId?: string,
 ): ActionReturn<Project> {
   const client = Agnost.getServerClient(cookies());
 
   const { errors, data: project } = await client.endpoint.put(
     `/projects/${id}`,
-    { ...data, duration },
+    { ...data, duration, channelId },
   );
 
   if (errors) {

@@ -30,6 +30,7 @@ Refrain from using custom SVG icons. Abstain from custom SVG insignias. Use only
 Remember use Fontawesome icons, Tailwind CSS classes, and Alpine.js for styling. Use a CDN to include Tailwind CSS and appropriate Fontawesome classes for any icons. 
 
 for tailwind css use this JavaScript script "<script src="https://cdn.tailwindcss.com"></script>" in the head tag, and do not use any other cdn service for tailwind css.
+for alpine.js use this JavaScript script "<script src="https://unpkg.com/alpinejs" defer></script>" in the head tag, and do not use any other cdn service for alpine.js.
 
 Don't give any descriptive text. Start with <!DOCTYPE html> and end with </html>.`;
 
@@ -89,9 +90,17 @@ export const POST = authWrapper(async (req: Request, { user }) => {
   });
 
   const stream = OpenAIStream(response, {
-    onFinal: (data) => {
+    onFinal: async (result) => {
       const duration = Date.now() - start;
-      updateProject(project.id, { result: data, status: "draft" }, duration);
+      await updateProject(
+        project.id,
+        {
+          result,
+          status: "draft",
+        },
+        duration,
+        channelId,
+      );
     },
   });
   return new StreamingTextResponse(stream);
