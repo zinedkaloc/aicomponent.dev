@@ -1,11 +1,15 @@
 import ProjectDesign from "@/components/ProjectDesign";
 import { env } from "@/env";
 import { actionWrapper, getProjectById } from "@/lib/actions";
+import { notFound } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 type Props = {
   params: { id: string };
   searchParams: { [key: string]: string | string[] | undefined };
 };
+
 export async function generateMetadata({ params }: Props) {
   return {
     metadataBase: new URL(env.NEXT_PUBLIC_APP_DOMAIN),
@@ -18,15 +22,15 @@ export async function generateMetadata({ params }: Props) {
 export default async function ProjectDetail({ params }: Props) {
   const project = await actionWrapper(getProjectById(+params.id));
 
+  if (!project) {
+    return notFound();
+  }
+
+  console.log(project.sub_projects);
+
   return (
-    <div className="flex min-h-[--full-height] w-full flex-col items-center px-4 pt-6 md:px-14">
-      {project?.result ? (
-        <ProjectDesign project={project} subProjects={[]} />
-      ) : (
-        <div className="flex h-full flex-1 items-center justify-center text-gray-400">
-          No HTML to display
-        </div>
-      )}
+    <div className="flex h-[--full-height] w-full flex-col items-center px-4 md:px-14">
+      <ProjectDesign project={project} subProjects={project.sub_projects} />
     </div>
   );
 }

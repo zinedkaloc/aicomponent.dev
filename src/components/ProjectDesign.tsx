@@ -2,7 +2,7 @@
 
 import { Project, ProjectHistory } from "@/types";
 import BrowserWindow from "@/components/BrowserWindow";
-import { useState } from "react";
+import { CSSProperties, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Check,
@@ -18,6 +18,7 @@ import { cn, downloadHTML } from "@/lib/utils";
 import History from "@/components/History";
 import FirstPrompt from "@/components/FirstPrompt";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useWindowSize } from "@uidotdev/usehooks";
 
 interface ProjectDesignProps {
   project: Project;
@@ -30,6 +31,9 @@ export default function ProjectDesign(props: ProjectDesignProps) {
   const [copied, setCopied] = useState(false);
   const searchParams = useSearchParams();
   const selected = +(searchParams.get("selected") ?? 0);
+
+  const browserWindow = useRef<HTMLDivElement>(null);
+  useWindowSize();
 
   async function share() {
     const url = new URL(window.location.href);
@@ -130,15 +134,22 @@ export default function ProjectDesign(props: ProjectDesignProps) {
   };
 
   return (
-    <div className="w-full space-y-2">
+    <div className="w-full space-y-2 py-4">
       <FirstPrompt firstPrompt={props.project.prompt} />
-      <div className="grid w-full items-center gap-4 md:grid-cols-[300px_1fr_300px] lg:h-[--full-height]">
-        <div className="hidden lg:block" />
-        <div className="h-[--full-height] w-full">
+      <div className="grid w-full max-w-full gap-4 md:grid-cols-[300px_1fr_300px] lg:max-h-[calc(var(--full-height)-5rem)]">
+        <div className="hidden md:block" />
+        <div className="h-full">
           <BrowserWindow
-            contentClassName="bg-white overflow-auto"
-            className="h-[--full-height]"
+            ref={browserWindow}
+            contentClassName="bg-white overflow-auto max-w-full"
+            className="h-full max-w-full lg:max-h-[calc(var(--full-height)-5rem)]"
             header={HeaderButtons}
+            style={
+              {
+                "--w":
+                  browserWindow.current?.getBoundingClientRect().width! - 2,
+              } as CSSProperties
+            }
           >
             {selectedComponent.result && (
               <SyntaxHighlighter
@@ -147,7 +158,10 @@ export default function ProjectDesign(props: ProjectDesignProps) {
                 showLineNumbers
                 wrapLines
                 wrapLongLines
-                className={cn(!codeViewActive && "!hidden")}
+                className={cn(
+                  "max-w-[calc(var(--w)*1px)]",
+                  !codeViewActive && "!hidden",
+                )}
               >
                 {selectedComponent.result}
               </SyntaxHighlighter>

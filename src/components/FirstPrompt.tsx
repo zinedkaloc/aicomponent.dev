@@ -4,7 +4,7 @@ import UserAvatar from "@/components/UserAvatar";
 export default function FirstPrompt(props: { firstPrompt: string }) {
   return (
     <div className="grid w-full gap-4 md:grid-cols-[300px_1fr_300px]">
-      <div className="hidden lg:block" />
+      <div className="hidden md:block" />
       <div className="flex items-center gap-3">
         <UserAvatar />
         <div className="!disabled:text-black !disabled:bg-white auth-btn relative inline-flex w-fit items-center justify-center space-x-2 rounded-2xl border border-black bg-black px-3 py-1 text-sm text-white transition-all focus:outline-none enabled:hover:bg-white enabled:hover:text-black">
@@ -22,7 +22,7 @@ export default function FirstPrompt(props: { firstPrompt: string }) {
           </svg>
         </div>
       </div>
-      <div className="hidden lg:block" />
+      <div className="hidden md:block" />
     </div>
   );
 }

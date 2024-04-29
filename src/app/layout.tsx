@@ -7,6 +7,8 @@ import { actionWrapper, getAuthUser } from "@/lib/actions";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/app/provider";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL("https://aicomponent.dev"),
@@ -38,7 +40,7 @@ export default async function RootLayout({
           <body>
             {children}
             <AuthModal />
-            <Toaster position="top-center" />
+            <Toaster position="top-center" closeButton />
           </body>
         </html>
       </AuthProvider>

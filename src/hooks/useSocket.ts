@@ -1,42 +1,53 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Agnost from "@/lib/agnost";
-import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { RealtimeManager } from "@agnost/client";
 
 export default function useSocket() {
-  const { realtime } = Agnost.getBrowserClient();
-  const { user } = useAuth();
-  const [connected, setConnected] = useState(false);
+  const { realtime, connected, setConnected } = useSocketStore();
 
   function onConnect() {
+    console.log("Connected to socket");
     setConnected(true);
   }
 
   function onDisconnect() {
+    console.log("Disconnected from socket");
     setConnected(false);
   }
 
   useEffect(() => {
-    realtime.open();
-
     realtime.onConnect(onConnect);
     realtime.onDisconnect(onDisconnect);
 
     return () => {
+      if (!connected) return;
       realtime.close();
       realtime.offAny(onConnect);
       realtime.offAny(onDisconnect);
     };
-  }, []);
-
-  useEffect(() => {
-    if (!user) return;
-    const userKey = `user:${user?.id}`;
-
-    realtime.join(userKey);
-    return () => {
-      realtime.leave(userKey);
-    };
-  }, [user]);
+  }, [connected]);
 
   return { realtime, connected };
 }
+
+export const useSocketStore = create<{
+  realtime: RealtimeManager;
+  setRealtime: (realtime: RealtimeManager) => void;
+  setConnected: (isConnected: boolean) => void;
+  connected: boolean;
+}>()(
+  devtools(
+    (set) => ({
+      realtime: Agnost.getBrowserClient().realtime,
+      connected: false,
+      setRealtime: (realtime) => set({ realtime }),
+      setConnected: (connected) => set({ connected }),
+    }),
+    {
+      name: "socket-storage",
+    },
+  ),
+);

@@ -77,20 +77,19 @@ export default function SubmissionForm(props: Props) {
       )}
     >
       <div className="w-full max-w-xl space-y-1">
-        <div className="flex min-h-[3rem] items-center justify-center gap-2 overflow-hidden rounded-xl border bg-transparent px-2 shadow shadow-black/30 transition focus-within:ring-0 focus-visible:ring-transparent">
+        <div className="flex min-h-[3rem] items-center justify-center gap-2 overflow-hidden rounded-xl border bg-transparent px-2 transition focus-within:ring-0 focus-visible:ring-transparent [&:has(input:focus)]:border-black">
           <div className="flex min-h-[3rem] min-w-0 flex-1 items-center self-end">
             <form onSubmit={onSubmit} className="h-full w-full">
               <div className="relative flex h-fit min-h-full w-full items-center transition-all duration-300">
                 <label htmlFor="prompt" className="sr-only">
                   Prompt
                 </label>
-
                 <div className="relative flex min-w-0 flex-1 self-start">
                   <input
                     ref={inputRef}
                     id="prompt"
                     maxLength={1000}
-                    className="min-h-[3rem] min-w-[50%] flex-[1_0_50%] resize-none border-none bg-transparent py-3 pl-3 pr-4 text-base scrollbar-hide [--tw-ring-shadow:none]  focus-visible:outline-none disabled:opacity-80 sm:min-h-[15px] sm:leading-6 md:text-sm"
+                    className="min-h-[3rem] min-w-[50%] flex-[1_0_50%] resize-none border-none bg-transparent py-3 pl-3 pr-4 text-base scrollbar-hide focus-visible:outline-none disabled:opacity-80 sm:min-h-[15px] sm:leading-6 md:text-sm"
                     spellCheck="false"
                     autoComplete="off"
                     value={prompt}

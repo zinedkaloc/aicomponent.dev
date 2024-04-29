@@ -34,6 +34,7 @@ export interface Project {
   rating_text: string;
   created_by: number | User;
   status: "draft" | "live";
+  sub_projects: Project[];
   updated_at: string;
   deleted_at: string;
   created_at: string;

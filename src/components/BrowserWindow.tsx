@@ -1,4 +1,4 @@
-import { ReactNode, forwardRef } from "react";
+import { ReactNode, forwardRef, CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
 interface BrowserWindowProps {
@@ -6,15 +6,17 @@ interface BrowserWindowProps {
   className?: string;
   contentClassName?: string;
   header?: ReactNode;
+  style?: CSSProperties;
 }
 
 const BrowserWindow = forwardRef<HTMLDivElement, BrowserWindowProps>(
-  ({ children, header, className, contentClassName }, ref) => {
+  ({ children, header, className, style, contentClassName }, ref) => {
     return (
       <div
         ref={ref}
+        style={style}
         className={cn(
-          "browser-window flex w-full flex-col items-center overflow-hidden",
+          "browser-window flex w-full shrink-0 flex-col items-center overflow-hidden",
           className,
         )}
       >

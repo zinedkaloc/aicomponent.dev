@@ -28,7 +28,7 @@ export default function Header() {
   }
 
   return (
-    <header className="w-full border-b px-6">
+    <header className="h-[--header-height] w-full border-b px-6">
       <div className="flex h-full items-center justify-between">
         <div className="flex items-center gap-2">
           <Logo href={isProjectPage ? `/projects` : "/"} />

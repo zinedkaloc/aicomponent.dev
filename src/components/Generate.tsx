@@ -1,9 +1,10 @@
 "use client";
 
-import { useDebounce, useThrottle } from "@uidotdev/usehooks";
+import { useThrottle } from "@uidotdev/usehooks";
 import BrowserWindow from "@/components/BrowserWindow";
 import { Button } from "@/components/ui/button";
 import {
+  ArrowUp,
   Check,
   Code2,
   Download,
@@ -38,11 +39,10 @@ import useSocket from "@/hooks/useSocket";
 const theme = githubGist;
 
 export default function Generate() {
-  const { user, refetchUser } = useAuth();
+  const { refetchUser } = useAuth();
   const { replace } = useRouter();
   const { connected, realtime } = useSocket();
-
-  const { set, get, has, deleteByKey } = useSearchParams();
+  const { get, has, deleteByKey } = useSearchParams();
 
   const channelId = usePrompt((state) => state.channelId);
   const prompt = usePrompt((state) => state.prompt);
@@ -63,7 +63,7 @@ export default function Generate() {
   const [rated, setRated] = useState(false);
   const selected = Number(get("selected") ?? 0);
 
-  const debounceContent = useThrottle(iframeContent, 300);
+  const debounceContent = useThrottle(iframeContent, 400);
 
   useEffect(() => {
     if (!connected || !prompt) return;
@@ -87,15 +87,7 @@ export default function Generate() {
     };
   }, []);
 
-  const {
-    messages,
-    input,
-    setInput,
-    handleInputChange,
-    handleSubmit,
-    stop,
-    isLoading,
-  } = useChat({
+  const { messages, input, setInput, handleSubmit, stop, isLoading } = useChat({
     body: {
       projectId,
       channelId,
@@ -215,46 +207,53 @@ export default function Generate() {
     if (iframeContent) downloadHTML(iframeContent);
   };
 
-  function onFocusHandler() {
-    if (!user) {
-      set("authModal", "true");
-    }
-  }
-
   const Form = (
-    <form
-      onSubmit={(e) => {
-        handleSubmit(e);
-        deleteByKey("selected");
-        if (!firstPrompt) setFirstPrompt(input);
-      }}
-      className={cn(
-        "w-full",
-        !firstPrompt && "mx-auto mb-4 sm:w-11/12 md:w-[800px]",
-        firstPrompt && "flex w-full items-center justify-center",
-      )}
-    >
-      <input
-        className={cn(
-          "text-ellipsis border p-2 px-4 transition focus:shadow-lg focus:outline-0",
-          firstPrompt
-            ? "w-full rounded-3xl bg-white/50 hover:border-black"
-            : "mb-3 w-full rounded-full",
-        )}
-        value={input}
-        placeholder={
-          isLoading
-            ? "Generating... "
-            : firstPrompt
-              ? "Say something to change design"
-              : "Say something..."
-        }
-        onChange={user ? handleInputChange : undefined}
-        onFocus={onFocusHandler}
-        readOnly={!user}
-        disabled={isLoading}
-      />
-    </form>
+    <>
+      <div className="flex min-h-[3rem] items-center justify-center gap-2 overflow-hidden rounded-xl border bg-transparent px-2 transition focus-within:ring-0 focus-visible:ring-transparent [&:has(input:focus)]:border-black">
+        <div className="flex min-h-[3rem] min-w-0 flex-1 items-center self-end">
+          <form
+            className="w-full"
+            onSubmit={(e) => {
+              handleSubmit(e);
+              deleteByKey("selected");
+              if (!firstPrompt) setFirstPrompt(input);
+            }}
+          >
+            <div className="relative flex h-fit min-h-full w-full items-center transition-all duration-300">
+              <label htmlFor="prompt" className="sr-only">
+                Prompt
+              </label>
+              <div className="relative flex min-w-0 flex-1 self-start">
+                <input
+                  maxLength={1000}
+                  className="min-h-[3rem] min-w-[50%] flex-[1_0_50%] resize-none border-none bg-transparent py-3 pl-3 pr-4 text-base scrollbar-hide focus-visible:outline-none disabled:opacity-80 sm:min-h-[15px] sm:leading-6 md:text-sm"
+                  spellCheck="false"
+                  autoComplete="off"
+                  value={input}
+                  disabled={isLoading}
+                  placeholder={
+                    isLoading
+                      ? "Generating..."
+                      : "Say something to change design"
+                  }
+                  onChange={(event) => setInput(event.target.value)}
+                  style={{ boxShadow: "none" }}
+                />
+              </div>
+
+              <Button type="submit" size="icon-sm" className="rounded-lg">
+                <span className="sr-only">Send</span>
+                {isLoading ? (
+                  <Spinner className="!size-4" />
+                ) : (
+                  <ArrowUp className="!size-4" />
+                )}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </>
   );
 
   function stopGeneration() {
@@ -372,7 +371,7 @@ export default function Generate() {
           <section className="w-full space-y-2">
             {firstPrompt && <FirstPrompt firstPrompt={firstPrompt} />}
             <div className="grid w-full gap-4 lg:h-[calc(100vh-160px)] lg:grid-cols-[300px_1fr_300px]">
-              <div className="hidden lg:block" />
+              <div className="hidden md:block" />
               <div className="grid h-[calc(100vh-160px)] w-full grid-rows-[1fr_auto] space-y-2.5">
                 <BrowserWindow
                   contentClassName="bg-white overflow-auto"
