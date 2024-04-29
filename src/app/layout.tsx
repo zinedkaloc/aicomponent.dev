@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { actionWrapper, getAuthUser } from "@/lib/actions";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/app/provider";
+import { User } from "@/types";
 
 export const dynamic = "force-dynamic";
 
@@ -31,11 +32,14 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  const user = await actionWrapper(getAuthUser());
+  let user: User | null = null;
+  try {
+    user = await actionWrapper(getAuthUser());
+  } catch {}
 
   return (
     <QueryProvider>
-      <AuthProvider user={user ?? null}>
+      <AuthProvider user={user}>
         <html lang="en">
           <body>
             {children}
