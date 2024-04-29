@@ -66,15 +66,16 @@ export default function Generate() {
   const debounceContent = useThrottle(iframeContent, 400);
 
   useEffect(() => {
+    if (connected) return;
+    realtime.open();
+  }, [connected]);
+
+  useEffect(() => {
     if (!connected || !prompt) return;
 
     handleSubmit(new Event("submit") as unknown as FormEvent<HTMLFormElement>);
     deleteByKey("selected");
     if (!firstPrompt) setFirstPrompt(prompt);
-
-    return () => {
-      setPrompt(undefined);
-    };
   }, [connected, prompt]);
 
   useEffect(() => {
