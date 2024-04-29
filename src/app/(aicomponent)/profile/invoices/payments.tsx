@@ -14,7 +14,7 @@ export default function Payments({ payments }: { payments: Payment[] }) {
       if (has("status")) {
         deleteByKey("status");
       }
-    }, 1_000);
+    }, 1_500);
     return () => clearTimeout(timeout);
   }, []);
 
@@ -83,19 +83,17 @@ function DesktopTable({ payments }: { payments: Payment[] }) {
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                       <div className="flex w-full justify-end">
-                        <a
-                          href={payment.hosted_invoice_url}
-                          className="block w-full sm:w-auto"
-                          target="_blank"
-                        >
-                          <Button
-                            disabled={!payment.hosted_invoice_url}
-                            className="w-full gap-2 sm:w-auto"
+                        <Button asChild>
+                          <a
+                            href={payment.invoice_pdf}
+                            className="block w-full gap-2 sm:w-auto"
+                            target="_blank"
+                            download
                           >
                             <FileText className="h-4 w-4" />
                             View Invoice
-                          </Button>
-                        </a>
+                          </a>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -151,16 +149,17 @@ function MobileTable({ payments }: { payments: Payment[] }) {
               </div>
             </dl>
             <div className="flex justify-center gap-1 sm:items-center">
-              <a
-                href={payment.hosted_invoice_url}
-                className="block w-full sm:w-auto"
-                target="_blank"
-              >
-                <Button className="w-full gap-2 sm:w-auto">
+              <Button asChild>
+                <a
+                  href={payment.invoice_pdf}
+                  className="block w-full gap-2 sm:w-auto"
+                  target="_blank"
+                  download
+                >
                   <FileText className="h-4 w-4" />
                   View Invoice
-                </Button>
-              </a>
+                </a>
+              </Button>
             </div>
           </div>
         </div>
