@@ -69,11 +69,6 @@ export default function Generate() {
   });
 
   useEffect(() => {
-    if (connected) return;
-    realtime.open();
-  }, [connected]);
-
-  useEffect(() => {
     if (!connected || !prompt) return;
 
     handleSubmit(new Event("submit") as unknown as FormEvent<HTMLFormElement>);
@@ -326,7 +321,11 @@ export default function Generate() {
                     : iframeContent ?? ""}
                 </SyntaxHighlighter>
                 <iframe
-                  srcDoc={`<script src="https://unpkg.com/alpinejs" defer></script><script src="https://cdn.tailwindcss.com"></script><script>window.addEventListener('message', (event) => { document.body.innerHTML = event.data; });</script>`}
+                  srcDoc={
+                    '<script src="https://unpkg.com/alpinejs" defer></script>' +
+                    '<script src="https://cdn.tailwindcss.com"></script>' +
+                    `<script>window.addEventListener('message', (event) => { document.documentElement.innerHTML = event.data });</script>`
+                  }
                   ref={iframeRef}
                   className={cn(
                     "h-full w-full",

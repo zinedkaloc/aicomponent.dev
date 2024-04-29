@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import Agnost from "@/lib/agnost";
-import { toast } from "sonner";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { RealtimeManager } from "@agnost/client";
@@ -19,18 +18,22 @@ export default function useSocket() {
   }
 
   useEffect(() => {
-    realtime.onConnect(onConnect);
-    realtime.onDisconnect(onDisconnect);
-
-    return () => {
-      if (!connected) return;
-      realtime.close();
-      realtime.offAny(onConnect);
-      realtime.offAny(onDisconnect);
-    };
+    if (!connected) {
+      realtime.open();
+    }
   }, [connected]);
 
-  return { realtime, connected };
+  useEffect(() => {
+    realtime.onConnect(onConnect);
+    realtime.onDisconnect(onDisconnect);
+  }, []);
+
+  function disconnect() {
+    realtime.offAny();
+    realtime.close();
+  }
+
+  return { realtime, connected, disconnect };
 }
 
 export const useSocketStore = create<{
