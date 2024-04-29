@@ -1,9 +1,19 @@
 "use client";
 import UserAvatar from "@/components/UserAvatar";
+import { cn } from "@/lib/utils";
 
-export default function FirstPrompt(props: { firstPrompt: string }) {
+export default function FirstPrompt(props: {
+  firstPrompt?: string | null;
+  className?: string;
+}) {
   return (
-    <div className="grid w-full gap-4 md:grid-cols-[300px_1fr_300px]">
+    <div
+      className={cn(
+        "grid w-full gap-4 md:grid-cols-[300px_1fr_300px]",
+        !props.firstPrompt && "opacity-0",
+        props.className,
+      )}
+    >
       <div className="hidden md:block" />
       <div className="flex items-center gap-3">
         <UserAvatar />
