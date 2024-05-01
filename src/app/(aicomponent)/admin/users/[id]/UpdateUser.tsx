@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
 import { xcodeLight } from "@uiw/codemirror-theme-xcode";
+import actionWrapper from "@/lib/actions/actionWrapper";
+import { APIError } from "@agnost/client";
 
 export default function UpdateUser({ user }: { user: User }) {
   const { user: authUser, refetchUser } = useAuth();
@@ -24,15 +26,28 @@ export default function UpdateUser({ user }: { user: User }) {
 
     try {
       setLoading(true);
-      await updateUser(user.id, JSON.parse(data));
+      await actionWrapper(updateUser(user.id, JSON.parse(data)));
       toast.success("User updated successfully");
       refresh();
       if (authUser?.id === user.id) {
         refetchUser();
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to update user");
+    } catch (error: unknown) {
+      const APIError = error as APIError;
+
+      const zodErrors = APIError.items.find(
+        (item) => item.code === "zod_error",
+      )?.details;
+
+      if (!zodErrors) {
+        toast.error("Failed to update user");
+      } else {
+        const { fieldErrors } = zodErrors as {
+          fieldErrors: Record<string, string>;
+        };
+        const [error] = Object.values(fieldErrors);
+        if (error) toast.error(error);
+      }
     } finally {
       setLoading(false);
     }

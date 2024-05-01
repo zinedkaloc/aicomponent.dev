@@ -2,13 +2,43 @@
 
 import Agnost from "@/lib/agnost";
 import { ActionReturn } from "@/lib/actions/types";
-import { Pagination, User } from "@/types";
+import { Pagination, User, UserSchema } from "@/types";
 import { cookies } from "next/headers";
+import { APIError } from "@agnost/client";
 
 export async function updateUser(
   id: number,
   userData: Partial<User>,
 ): ActionReturn<User> {
+  const parsed = UserSchema.pick({
+    email: true,
+    name: true,
+    credits: true,
+    stripe_customer_id: true,
+    stripe_test_customer_id: true,
+    promotion_code_test: true,
+    promotion_code: true,
+    is_admin: true,
+  }).safeParse(userData);
+
+  if (!parsed.success) {
+    const errors: APIError = {
+      status: 400,
+      items: [
+        {
+          message: "Bad Request",
+          code: "zod_error",
+          origin: "body",
+          details: parsed.error.flatten(),
+        },
+      ],
+      statusText: "Bad Request",
+    };
+
+    console.log(parsed.error.flatten());
+    return { success: false, errors };
+  }
+
   const client = Agnost.getServerClient(cookies());
 
   const { errors, data } = await client.endpoint.put(

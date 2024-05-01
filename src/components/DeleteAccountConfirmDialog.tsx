@@ -41,10 +41,10 @@ export default function DeleteAccountConfirmDialog() {
       onConfirm={deleteAccountHandler}
     >
       <Avatar className="size-20">
-        <AvatarImage src={user.profile_picture} />
+        <AvatarImage src={user?.profilepicture} />
         <AvatarFallback>
           {user.name
-            .split(" ")
+            ?.split(" ")
             .map((name) => name[0])
             .join("")}
         </AvatarFallback>

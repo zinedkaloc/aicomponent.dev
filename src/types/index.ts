@@ -1,28 +1,45 @@
-import type { AgnostClient } from "@agnost/client";
+import type { AgnostClient, User as AgnostUser } from "@agnost/client";
+import { z } from "zod";
 
-export interface User {
-  id: number;
-  credits: number;
-  email: string;
-  last_login_at: string;
-  name: string;
-  password: string;
-  phone: string;
-  phone_verified: boolean;
-  profile_picture: string;
-  profilepicture: string;
-  provider: string;
-  provider_user_id: string;
-  signup_at: string;
-  email_verified: boolean;
-  created_at: string;
-  updated_at: string;
-  promotion_code_test: string;
-  stripe_test_customer_id: string;
-  promotion_code: string;
-  stripe_customer_id: string;
-  is_admin: boolean;
-}
+export const UserSchema = z.object({
+  id: z.number(),
+  credits: z
+    .number({
+      message: "Credits must be a number",
+    })
+    .positive({
+      message: "Credits must be a positive number",
+    }),
+  email: z
+    .string({
+      message: "Email must be a string",
+    })
+    .email({ message: "Email must be a valid email" }),
+  last_login_at: z.string(),
+  name: z.string({
+    message: "Name must be a string",
+  }),
+  password: z.string(),
+  phone: z.string().nullish(),
+  phone_verified: z.boolean(),
+  profile_picture: z.string().nullish(),
+  profilepicture: z.string().optional(),
+  provider: z.string().nullish(),
+  provider_user_id: z.string().nullish(),
+  signup_at: z.string(),
+  email_verified: z.boolean(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  promotion_code_test: z.string().nullish(),
+  stripe_test_customer_id: z.string().nullish(),
+  promotion_code: z.string().nullish(),
+  stripe_customer_id: z.string().nullish(),
+  is_admin: z.boolean(),
+});
+
+export type MyUser = z.infer<typeof UserSchema>;
+
+export interface User extends AgnostUser {}
 
 export interface Project {
   id: number;
@@ -115,4 +132,8 @@ export interface Pagination<T> {
     current_page: number;
     total_pages: number;
   };
+}
+
+declare module "@agnost/client" {
+  interface User extends MyUser {}
 }

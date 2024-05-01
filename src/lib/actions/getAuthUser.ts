@@ -6,7 +6,6 @@ import myFetch, { ResponseError } from "@/lib/myFetch";
 import { env } from "@/env";
 import type { APIError } from "@agnost/client";
 import { ActionReturn } from "@/lib/actions/types";
-import Agnost from "@/lib/agnost";
 
 export default async function getAuthUser(): ActionReturn<User | null> {
   const cookieStore = cookies();

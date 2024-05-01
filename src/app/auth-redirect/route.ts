@@ -22,14 +22,14 @@ export async function GET(req: NextRequest) {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7, // 1 week
     });
+
     response.cookies.set("creationDtm", session.creationDtm, {
       path: "/",
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7, // 1 week
     });
 
-    // @ts-ignore
-    response.cookies.set("userId", user.id, {
+    response.cookies.set("userId", user.id.toString(), {
       path: "/",
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7, // 1 week
