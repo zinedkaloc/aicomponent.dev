@@ -1,6 +1,6 @@
 "use client";
 
-import { Project, ProjectHistory } from "@/types";
+import { Project, ProjectHistory, User } from "@/types";
 import BrowserWindow from "@/components/BrowserWindow";
 import { CSSProperties, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -133,9 +133,14 @@ export default function ProjectDesign(props: ProjectDesignProps) {
         : props.subProjects?.[selected - 1]?.result,
   };
 
+  const user =
+    typeof props.project.created_by === "number"
+      ? undefined
+      : props.project.created_by;
+
   return (
     <div className="w-full space-y-2 py-4">
-      <FirstPrompt firstPrompt={props.project.prompt} />
+      <FirstPrompt user={user} firstPrompt={props.project.prompt} />
       <div className="grid w-full max-w-full gap-4 md:grid-cols-[300px_1fr_300px] lg:max-h-[calc(var(--full-height)-5rem)]">
         <div className="hidden md:block" />
         <div className="h-full">

@@ -1,10 +1,12 @@
 "use client";
-import UserAvatar from "@/components/UserAvatar";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "@/types";
 
 export default function FirstPrompt(props: {
   firstPrompt?: string | null;
   className?: string;
+  user?: User;
 }) {
   return (
     <div
@@ -16,7 +18,15 @@ export default function FirstPrompt(props: {
     >
       <div className="hidden md:block" />
       <div className="flex items-center gap-3">
-        <UserAvatar />
+        {props.user && (
+          <Avatar className={cn("h-8 w-8 select-none")}>
+            <AvatarImage
+              alt={props.user?.name!}
+              src={props.user?.profilepicture}
+            />
+            <AvatarFallback>{props.user?.name?.[0]}</AvatarFallback>
+          </Avatar>
+        )}
         <div className="!disabled:text-black !disabled:bg-white auth-btn relative inline-flex w-fit items-center justify-center space-x-2 rounded-2xl border border-black bg-black px-3 py-1 text-sm text-white transition-all focus:outline-none enabled:hover:bg-white enabled:hover:text-black">
           {props.firstPrompt}
           <svg

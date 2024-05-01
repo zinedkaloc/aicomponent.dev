@@ -27,8 +27,6 @@ export default async function ProjectDetail({ params }: Props) {
     return notFound();
   }
 
-  console.log(project.sub_projects);
-
   return (
     <div className="flex h-[--full-height] w-full flex-col items-center px-4 md:px-14">
       <ProjectDesign project={project} subProjects={project.sub_projects} />

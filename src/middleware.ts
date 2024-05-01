@@ -7,12 +7,18 @@ import actionWrapper from "@/lib/actions/actionWrapper";
 
 export async function middleware(request: NextRequest) {
   let path = request.nextUrl.pathname;
-  const PROTECTED_PATHS = ["/profile", "/projects", "/start-building"];
+  const PROTECTED_PATHS = [
+    { path: "/profile", exact: false },
+    { path: "/projects", exact: true },
+    { path: "/start-building", exact: false },
+  ];
+
   const session = cookies().has("sessionToken");
 
-  const isProtectedPage = PROTECTED_PATHS.some((protectedPath) =>
-    path.startsWith(protectedPath),
-  );
+  const isProtectedPage = PROTECTED_PATHS.some((protectedPath) => {
+    if (protectedPath.exact) return path === protectedPath.path;
+    return path.startsWith(protectedPath.path);
+  });
 
   if (path.startsWith("/admin")) {
     const user = await actionWrapper(getAuthUser());
