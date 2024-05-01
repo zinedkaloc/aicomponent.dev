@@ -68,6 +68,8 @@ export default function Generate() {
     initialInput: prompt,
   });
 
+  const showInput = messages.filter((m) => m.role !== "user").length > 0;
+
   useEffect(() => {
     if (!connected || !prompt) return;
 
@@ -200,90 +202,6 @@ export default function Generate() {
     });
   }
 
-  const HeaderButtons = (
-    <div className="lg:max-w-auto flex items-center gap-2">
-      {isLoading && (
-        <Button
-          size="xs"
-          variant="light"
-          onClick={stopGeneration}
-          className="gap-2 whitespace-nowrap px-3 py-1"
-        >
-          <Spinner />
-          Stop generation
-        </Button>
-      )}
-
-      {finished && !rated && selected === 0 && (
-        <TooltipProvider>
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <Button
-                size="xs"
-                variant="light"
-                onClick={() => {
-                  const params = new URLSearchParams(window.location.search);
-                  params.set("rateModal", "true");
-                  replace(`?${params.toString()}`);
-                }}
-                className="aspect-square gap-2 whitespace-nowrap p-1"
-              >
-                <Star />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Rate your experience</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
-      {history.some((p) => p.ready) && (
-        <Button
-          variant="light"
-          size="xs"
-          className="gap-2 whitespace-nowrap px-3 py-1"
-          onClick={share}
-        >
-          {copied ? (
-            <>
-              <Check />
-              Copied
-            </>
-          ) : (
-            <>
-              <Share />
-              Share
-            </>
-          )}
-        </Button>
-      )}
-      <Button
-        size="xs"
-        variant="light"
-        className="gap-2 whitespace-nowrap px-3 py-1"
-        onClick={() => setCodeViewActive(!codeViewActive)}
-      >
-        {codeViewActive ? (
-          <>
-            <MonitorSmartphone />
-            Display
-          </>
-        ) : (
-          <>
-            <Code2 />
-            Code
-          </>
-        )}
-      </Button>
-      <Button
-        size="xs"
-        variant="light"
-        className="aspect-square gap-2 p-1"
-        onClick={handleSave}
-      >
-        <Download />
-      </Button>
-    </div>
-  );
-
   const selectedComponent = useMemo(() => {
     return {
       url: selected === 0 ? "/api/preview/" : `/api/preview/sub/`,
@@ -308,7 +226,91 @@ export default function Generate() {
             <div className="grid h-[calc(100vh-160px)] w-full grid-rows-[1fr_auto] space-y-2.5">
               <BrowserWindow
                 contentClassName="bg-white overflow-auto"
-                header={HeaderButtons}
+                header={
+                  <div className="lg:max-w-auto flex items-center gap-2">
+                    {isLoading && (
+                      <Button
+                        size="xs"
+                        variant="light"
+                        onClick={stopGeneration}
+                        className="gap-2 whitespace-nowrap px-3 py-1"
+                      >
+                        <Spinner />
+                        Stop generation
+                      </Button>
+                    )}
+
+                    {finished && !rated && selected === 0 && (
+                      <TooltipProvider>
+                        <Tooltip delayDuration={0}>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="xs"
+                              variant="light"
+                              onClick={() => {
+                                const params = new URLSearchParams(
+                                  window.location.search,
+                                );
+                                params.set("rateModal", "true");
+                                replace(`?${params.toString()}`);
+                              }}
+                              className="aspect-square gap-2 whitespace-nowrap p-1"
+                            >
+                              <Star />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Rate your experience</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                    {history.some((p) => p.ready) && (
+                      <Button
+                        variant="light"
+                        size="xs"
+                        className="gap-2 whitespace-nowrap px-3 py-1"
+                        onClick={share}
+                      >
+                        {copied ? (
+                          <>
+                            <Check />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <Share />
+                            Share
+                          </>
+                        )}
+                      </Button>
+                    )}
+                    <Button
+                      size="xs"
+                      variant="light"
+                      className="gap-2 whitespace-nowrap px-3 py-1"
+                      onClick={() => setCodeViewActive(!codeViewActive)}
+                    >
+                      {codeViewActive ? (
+                        <>
+                          <MonitorSmartphone />
+                          Display
+                        </>
+                      ) : (
+                        <>
+                          <Code2 />
+                          Code
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      size="xs"
+                      variant="light"
+                      className="aspect-square gap-2 p-1"
+                      onClick={handleSave}
+                    >
+                      <Download />
+                    </Button>
+                  </div>
+                }
               >
                 <SyntaxHighlighter
                   language="htmlbars"
@@ -333,7 +335,12 @@ export default function Generate() {
                   )}
                 />
               </BrowserWindow>
-              <div className="flex min-h-[3rem] items-center justify-center gap-2 overflow-hidden rounded-xl border bg-transparent px-2 transition focus-within:ring-0 focus-visible:ring-transparent [&:has(input:focus)]:border-black">
+              <div
+                className={cn(
+                  !showInput && "opacity-0",
+                  "flex min-h-[3rem] items-center justify-center gap-2 overflow-hidden rounded-xl border bg-transparent px-2 transition focus-within:ring-0 focus-visible:ring-transparent [&:has(input:focus)]:border-black",
+                )}
+              >
                 <div className="flex min-h-[3rem] min-w-0 flex-1 items-center self-end">
                   <form
                     className="w-full"
