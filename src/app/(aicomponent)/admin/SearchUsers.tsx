@@ -17,6 +17,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserIcon } from "lucide-react";
 import useSearchParams from "@/hooks/useSearchParams";
+import DeleteUser from "@/app/(aicomponent)/admin/users/[id]/DeleteUser";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SearchUsers({
   defaultQuery,
@@ -27,12 +30,15 @@ export default function SearchUsers({
   page?: number;
   limit?: number;
 }) {
+  const { user: authUser } = useAuth();
   const { set, deleteByKey } = useSearchParams();
   const [_search, setSearch] = useState(defaultQuery ?? "");
   const search = useDebounce(_search, 500);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["users-search", search],
+  const queryKey = ["users-search", search];
+
+  const { data, isLoading, refetch } = useQuery({
+    queryKey,
     queryFn: () => actionWrapper(getUsers({ page, limit, search })),
   });
 
@@ -78,13 +84,18 @@ export default function SearchUsers({
                 <CardTitle>{user.name}</CardTitle>
                 <CardDescription>{user.email}</CardDescription>
               </CardHeader>
-              <CardFooter>
-                <Link
-                  className="underline-offset-2 hover:underline"
-                  href={`/admin/users/${user.id}`}
-                >
-                  View details
-                </Link>
+              <CardFooter className="flex justify-between">
+                {authUser?.id !== user.id && (
+                  <DeleteUser onDeleted={refetch} user={user} />
+                )}
+                <Button size="sm" asChild>
+                  <Link
+                    className="underline-offset-2 hover:underline"
+                    href={`/admin/users/${user.id}`}
+                  >
+                    View details
+                  </Link>
+                </Button>
               </CardFooter>
             </Card>
           ))}

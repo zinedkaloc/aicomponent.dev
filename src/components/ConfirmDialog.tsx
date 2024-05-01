@@ -92,14 +92,14 @@ export default function ConfirmDialog({
             <AlertDialogAction asChild>
               {text && (
                 <Button
-                  disabled={confirmText !== text}
+                  disabled={confirmText.trim() !== text}
                   variant="destructive"
                   onClick={() => {
                     setConfirmText("");
                     onConfirm();
                   }}
                 >
-                  {text.toUpperCase()}
+                  CONFIRM
                 </Button>
               )}
             </AlertDialogAction>
