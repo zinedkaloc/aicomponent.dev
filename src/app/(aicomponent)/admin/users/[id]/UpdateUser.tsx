@@ -7,6 +7,9 @@ import { useAuth } from "@/context/AuthContext";
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import CodeMirror from "@uiw/react-codemirror";
+import { json } from "@codemirror/lang-json";
+import { xcodeLight } from "@uiw/codemirror-theme-xcode";
 
 export default function UpdateUser({ user }: { user: User }) {
   const { user: authUser, refetchUser } = useAuth();
@@ -37,20 +40,20 @@ export default function UpdateUser({ user }: { user: User }) {
   }
 
   return (
-    <div className="mx-auto h-[--full-height] max-w-4xl space-y-2 py-4">
+    <div className="mx-auto max-w-4xl space-y-2 p-4">
       <h2>
         Update user: {user.name}{" "}
         <span className="font-bold">({user.email})</span>
       </h2>
       <form onSubmit={handleSubmit} className="flex h-full flex-col gap-2">
-        <input type="number" className="hidden" name="id" value={user.id} />
-        <Textarea
-          name="user"
-          className="h-fit"
-          rows={9}
+        <CodeMirror
           value={data}
-          onChange={(e) => setData(e.target.value)}
+          onChange={(editor) => setData(editor)}
+          className="overflow-hidden rounded border"
+          theme={xcodeLight}
+          extensions={[json()]}
         />
+
         <div className="flex justify-end">
           <Button disabled={loading} type="submit">
             Update
