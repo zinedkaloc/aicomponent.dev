@@ -1,6 +1,5 @@
 "use client";
 import { User } from "@/types";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { updateUser } from "@/lib/actions/admin";
 import { useAuth } from "@/context/AuthContext";
