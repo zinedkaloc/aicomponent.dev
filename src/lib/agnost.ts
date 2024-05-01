@@ -31,13 +31,13 @@ export default class Agnost {
       );
     }
 
+    const token = cookies?.get("sessionToken")?.value;
+    const userId = cookies?.get("userId")?.value;
+
     const client = createClient(
       env.NEXT_PUBLIC_AGNOST_API_URL,
       env.AGNOST_SERVER_API_KEY,
     );
-
-    const token = cookies?.get("sessionToken")?.value;
-    const userId = cookies?.get("userId")?.value;
 
     // @ts-ignore
     client.auth.setSession({

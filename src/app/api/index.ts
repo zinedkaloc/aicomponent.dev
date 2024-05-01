@@ -1,7 +1,8 @@
 import type { User } from "@/types";
 import { type NextRequest, NextResponse } from "next/server";
 import { StreamingTextResponse } from "ai";
-import { actionWrapper, getAuthUser } from "@/lib/actions";
+import actionWrapper from "@/lib/actions/actionWrapper";
+import getAuthUser from "@/lib/actions/getAuthUser";
 
 type Data<T> = {
   user: User;

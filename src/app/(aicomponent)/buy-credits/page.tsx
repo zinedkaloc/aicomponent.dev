@@ -1,5 +1,6 @@
-import { actionWrapper, getPricingData } from "@/lib/actions";
+import { getPricingData } from "@/lib/actions";
 import PriceItem from "@/app/(aicomponent)/buy-credits/PriceItem";
+import actionWrapper from "@/lib/actions/actionWrapper";
 
 export default async function Page() {
   const prices = await actionWrapper(getPricingData());

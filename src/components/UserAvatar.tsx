@@ -15,15 +15,30 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Check, Coins, Layout, LogOut, Receipt, User } from "lucide-react";
+import {
+  Check,
+  Coins,
+  Layout,
+  LogOut,
+  Receipt,
+  ShieldEllipsis,
+  User,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Fragment } from "react";
+import { Fragment, ReactNode } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 interface UserAvatarProps {
   withDropdown?: boolean;
 }
+
+type DropdownItem = {
+  icon: ReactNode;
+  onClick?: () => void;
+  href?: string;
+  label: string;
+};
 
 export default function UserAvatar({ withDropdown }: UserAvatarProps) {
   const { user, logout } = useAuth();
@@ -31,7 +46,7 @@ export default function UserAvatar({ withDropdown }: UserAvatarProps) {
 
   const themes = ["light", "dark", "system"];
 
-  const DROPDOWN_ITEMS = [
+  const DROPDOWN_ITEMS: [DropdownItem[], DropdownItem[]] = [
     [
       {
         icon: <Layout size={16} />,
@@ -67,6 +82,15 @@ export default function UserAvatar({ withDropdown }: UserAvatarProps) {
       },
     ],
   ];
+
+  if (user?.is_admin) {
+    DROPDOWN_ITEMS?.[1]?.unshift?.({
+      icon: <ShieldEllipsis size={16} />,
+      onClick: undefined,
+      href: "/admin",
+      label: "Admin Panel",
+    });
+  }
 
   if (!user) return null;
 

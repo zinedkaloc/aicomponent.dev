@@ -3,33 +3,9 @@
 import Agnost from "@/lib/agnost";
 import { cookies } from "next/headers";
 import { Payment, PriceListResponse, Project, User } from "@/types";
-import type { APIError } from "@agnost/client";
-import { z } from "zod";
 import { env } from "@/env";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-
-export type ActionReturn<T> = Promise<
-  { success: true; data: T } | { success: false; errors: APIError }
->;
-
-const CreateCheckoutSessionScheme = z.object({
-  priceId: z.string(),
-  sessionMode: z.enum(["subscription", "payment"]).default("payment"),
-  metadata: z.record(z.string(), z.any()).optional(),
-});
-
-type CreateCheckoutSessionParams = z.infer<typeof CreateCheckoutSessionScheme>;
-
-export async function actionWrapper<T>(action: ActionReturn<T>) {
-  const result = await action;
-
-  if (!result.success) {
-    throw result.errors;
-  }
-
-  return result.data;
-}
+import { ActionReturn, CreateCheckoutSessionParams } from "@/lib/actions/types";
 
 export async function createCheckoutSession(
   params: CreateCheckoutSessionParams,
@@ -103,25 +79,6 @@ export async function signOut(): ActionReturn<undefined> {
   cookies().delete("userId");
 
   return { success: true, data: undefined };
-}
-
-export async function getAuthUser(): ActionReturn<User | null> {
-  const cookieStore = cookies();
-  const hasSession = cookieStore.has("sessionToken");
-
-  if (!hasSession) {
-    return { success: true, data: null };
-  }
-
-  const client = Agnost.getServerClient(cookies());
-  const { user, errors } = await client.auth.getUserFromDB();
-
-  if (errors) {
-    console.error(errors);
-    return { success: false, errors };
-  }
-
-  return { success: true, data: user as unknown as User };
 }
 
 export async function createProject(
@@ -206,7 +163,7 @@ export async function deleteProject(id: number): ActionReturn<undefined> {
   const client = Agnost.getServerClient(cookies());
   const { errors } = await client.endpoint.delete(`/projects/${id}`);
   if (errors) {
-    console.error(errors);
+    console.error("hata geldi");
     return { success: false, errors };
   }
   revalidatePath("/projects");

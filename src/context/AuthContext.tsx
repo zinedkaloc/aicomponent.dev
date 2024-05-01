@@ -1,11 +1,13 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useEffect } from "react";
+import { createContext, ReactNode, useContext } from "react";
 import type { User } from "@/types";
-import { actionWrapper, getAuthUser, signOut } from "@/lib/actions";
+import { signOut } from "@/lib/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import actionWrapper from "@/lib/actions/actionWrapper";
+import getAuthUser from "@/lib/actions/getAuthUser";
 
 interface AuthContext {
   user: User | null;

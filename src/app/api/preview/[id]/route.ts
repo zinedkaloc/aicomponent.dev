@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { actionWrapper, getProjectById } from "@/lib/actions";
+import { getProjectById } from "@/lib/actions";
 import { notFound } from "@/app/api";
+import actionWrapper from "@/lib/actions/actionWrapper";
 
 export async function GET(
   request: NextRequest,

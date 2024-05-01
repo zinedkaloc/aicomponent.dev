@@ -5,9 +5,10 @@ import { useState } from "react";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useAuth } from "@/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { actionWrapper, deleteProfile } from "@/lib/actions";
+import { deleteProfile } from "@/lib/actions";
 import { toast } from "sonner";
 import Spinner from "@/components/Spinner";
+import actionWrapper from "@/lib/actions/actionWrapper";
 
 export default function DeleteAccountConfirmDialog() {
   const [deleting, setDeleting] = useState(false);

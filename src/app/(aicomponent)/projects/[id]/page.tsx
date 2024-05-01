@@ -1,7 +1,8 @@
 import ProjectDesign from "@/components/ProjectDesign";
 import { env } from "@/env";
-import { actionWrapper, getProjectById } from "@/lib/actions";
+import { getProjectById } from "@/lib/actions";
 import { notFound } from "next/navigation";
+import actionWrapper from "@/lib/actions/actionWrapper";
 
 export const dynamic = "force-dynamic";
 

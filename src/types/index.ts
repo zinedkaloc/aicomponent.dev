@@ -21,6 +21,7 @@ export interface User {
   stripe_test_customer_id: string;
   promotion_code: string;
   stripe_customer_id: string;
+  is_admin: boolean;
 }
 
 export interface Project {
@@ -105,4 +106,13 @@ export interface PriceMetadata {
   amount: string;
   name: string;
   description: string;
+}
+
+export interface Pagination<T> {
+  result: T[];
+  pagination: {
+    total_records: number;
+    current_page: number;
+    total_pages: number;
+  };
 }

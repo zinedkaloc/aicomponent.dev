@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import DeleteAccountConfirmDialog from "@/components/DeleteAccountConfirmDialog";
 import NavLink from "@/components/NavLink";
-import { actionWrapper, updateAuthUser } from "@/lib/actions";
+import { updateAuthUser } from "@/lib/actions";
 import { toast } from "sonner";
 import Spinner from "@/components/Spinner";
+import actionWrapper from "@/lib/actions/actionWrapper";
 
 let toastId: string | number = 0;
 

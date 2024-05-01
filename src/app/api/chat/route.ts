@@ -2,9 +2,10 @@ import { Configuration, OpenAIApi } from "openai-edge";
 
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { env } from "@/env";
-import { actionWrapper, createProject, updateProject } from "@/lib/actions";
+import { createProject, updateProject } from "@/lib/actions";
 import { z } from "zod";
 import { authWrapper, badRequest, json } from "@/app/api";
+import actionWrapper from "@/lib/actions/actionWrapper";
 
 const config = new Configuration({
   apiKey: env.OPENAI_API_KEY,

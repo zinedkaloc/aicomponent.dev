@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ListProjects from "@/components/ListProjects";
 import { cn } from "@/lib/utils";
-import { actionWrapper, getProjects } from "@/lib/actions";
+import { getProjects } from "@/lib/actions";
+import actionWrapper from "@/lib/actions/actionWrapper";
 
 export const dynamic = "force-dynamic";
 

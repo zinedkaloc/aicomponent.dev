@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { actionWrapper, getProjectById, getProjects } from "@/lib/actions";
+import { getProjectById, getProjects } from "@/lib/actions";
 import { Project } from "@/types";
+import actionWrapper from "@/lib/actions/actionWrapper";
 
 interface ProjectsQuery {
   initialData?: Project[];

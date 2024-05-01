@@ -7,8 +7,9 @@ import { Project } from "@/types";
 import { useRouter } from "next/navigation";
 import { Trash } from "lucide-react";
 import Spinner from "@/components/Spinner";
-import { actionWrapper, deleteProject } from "@/lib/actions";
+import { deleteProject } from "@/lib/actions";
 import { toast } from "sonner";
+import actionWrapper from "@/lib/actions/actionWrapper";
 
 let toastId: any;
 

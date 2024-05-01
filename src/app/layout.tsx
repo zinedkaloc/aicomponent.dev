@@ -3,10 +3,11 @@ import { AuthProvider } from "@/context/AuthContext";
 import "../styles/global.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { actionWrapper, getAuthUser } from "@/lib/actions";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/app/provider";
 import { User } from "@/types";
+import actionWrapper from "@/lib/actions/actionWrapper";
+import getAuthUser from "@/lib/actions/getAuthUser";
 
 export const dynamic = "force-dynamic";
 

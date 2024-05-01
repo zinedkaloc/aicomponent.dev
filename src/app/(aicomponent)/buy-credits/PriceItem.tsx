@@ -8,8 +8,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { Price, PriceMetadata } from "@/types";
-import { actionWrapper, createCheckoutSession } from "@/lib/actions";
 import useSearchParams from "@/hooks/useSearchParams";
+import { createCheckoutSession } from "@/lib/actions";
+import actionWrapper from "@/lib/actions/actionWrapper";
 
 function getMetadata(price: Price) {
   return price.metadata as unknown as PriceMetadata;

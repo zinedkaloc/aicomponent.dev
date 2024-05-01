@@ -1,5 +1,6 @@
-import { actionWrapper, getPayments } from "@/lib/actions";
+import { getPayments } from "@/lib/actions";
 import Payments from "@/app/(aicomponent)/profile/invoices/payments";
+import actionWrapper from "@/lib/actions/actionWrapper";
 
 export default async function InvoicesPage() {
   const payments = await actionWrapper(getPayments());
