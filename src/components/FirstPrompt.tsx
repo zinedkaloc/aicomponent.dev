@@ -2,12 +2,17 @@
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "@/types";
+import { usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function FirstPrompt(props: {
   firstPrompt?: string | null;
   className?: string;
   user?: User;
 }) {
+  const { user } = useAuth();
+  const path = usePathname();
+  const isStartBuildingPage = path.startsWith("/start-building");
   return (
     <div
       className={cn(
@@ -18,7 +23,13 @@ export default function FirstPrompt(props: {
     >
       <div className="hidden md:block" />
       <div className="flex items-center gap-3">
-        {props.user && (
+        {isStartBuildingPage && (
+          <Avatar className={cn("h-8 w-8 select-none")}>
+            <AvatarImage alt={user?.name!} src={user?.profilepicture} />
+            <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
+          </Avatar>
+        )}
+        {!isStartBuildingPage && props.user && (
           <Avatar className={cn("h-8 w-8 select-none")}>
             <AvatarImage
               alt={props.user?.name!}

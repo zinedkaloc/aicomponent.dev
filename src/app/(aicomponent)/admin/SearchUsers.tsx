@@ -77,7 +77,7 @@ export default function SearchUsers({
             </CardContent>
           </Card>
         ) : null}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {data?.result.map((user) => (
             <Card key={user.id}>
               <CardHeader>
