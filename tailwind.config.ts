@@ -87,6 +87,7 @@ const config = {
     require("@tailwindcss/forms"),
     require("tailwind-scrollbar-hide"),
     require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
   ],
 } satisfies Config;
 
