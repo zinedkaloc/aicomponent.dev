@@ -12,7 +12,16 @@ export async function GET(req: NextRequest) {
   const destinationUrl = new URL("/", new URL(req.url).origin);
   const response = NextResponse.redirect(destinationUrl, { status: 302 });
 
-  if (!isOk) return response;
+  if (!isOk)
+    return new Response(
+      `${JSON.stringify(Object.fromEntries(url.searchParams.entries()), null, 4)}`,
+      {
+        status: status ? parseInt(status) : 500,
+        headers: {
+          "content-type": "application/json",
+        },
+      },
+    );
 
   const { user, session } = await auth.getAuthGrant(accessToken);
 

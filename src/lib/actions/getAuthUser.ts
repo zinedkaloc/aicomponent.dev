@@ -16,15 +16,12 @@ export default async function getAuthUser(): ActionReturn<User | null> {
   }
 
   try {
-    const res = await myFetch(
-      env.NEXT_PUBLIC_AGNOST_API_URL + "/agnost/auth/user",
-      {
-        headers: {
-          Authorization: env.AGNOST_SERVER_API_KEY,
-          Session: token,
-        },
+    const res = await myFetch(env.AGNOST_API_URL + "/agnost/auth/user", {
+      headers: {
+        Authorization: env.AGNOST_SERVER_API_KEY,
+        Session: token,
       },
-    );
+    });
 
     const data = (await res.json()) as User | APIError | undefined;
     return { success: true, data: data as User };
