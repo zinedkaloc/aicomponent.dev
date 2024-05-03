@@ -22,8 +22,8 @@ export default class Agnost {
 
   static getRealtimeClient() {
     return createClient(
-      env.NEXT_PUBLIC_AGNOST_API_URL,
       env.NEXT_PUBLIC_AGNOST_REALTIME_URL,
+      env.NEXT_PUBLIC_AGNOST_CLIENT_API_KEY,
     );
   }
 
