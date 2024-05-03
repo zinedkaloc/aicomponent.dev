@@ -44,7 +44,7 @@ export const useSocketStore = create<{
 }>()(
   devtools(
     (set) => ({
-      realtime: Agnost.getBrowserClient().realtime,
+      realtime: Agnost.getRealtimeClient().realtime,
       connected: false,
       setRealtime: (realtime) => set({ realtime }),
       setConnected: (connected) => set({ connected }),

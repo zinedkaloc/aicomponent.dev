@@ -27,6 +27,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_DOMAIN: z.string().url(),
     NEXT_PUBLIC_AGNOST_API_URL: z.string().url(),
     NEXT_PUBLIC_AGNOST_CLIENT_API_KEY: z.string().min(1),
+    NEXT_PUBLIC_AGNOST_REALTIME_URL: z.string().min(1),
   },
 
   /**
@@ -45,6 +46,8 @@ export const env = createEnv({
     NEXT_PUBLIC_AGNOST_CLIENT_API_KEY:
       process.env.NEXT_PUBLIC_AGNOST_CLIENT_API_KEY,
     AGNOST_API_URL: process.env.AGNOST_API_URL,
+    NEXT_PUBLIC_AGNOST_REALTIME_URL:
+      process.env.NEXT_PUBLIC_AGNOST_REALTIME_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
