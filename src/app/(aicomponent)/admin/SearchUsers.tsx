@@ -24,7 +24,7 @@ import { useAuth } from "@/context/AuthContext";
 export default function SearchUsers({
   defaultQuery,
   page = 1,
-  limit = 20,
+  limit = 100,
 }: {
   defaultQuery?: string;
   page?: number;
@@ -43,9 +43,9 @@ export default function SearchUsers({
   });
 
   useEffect(() => {
-    if (search) set("q", search);
+    if (_search) set("q", _search);
     else deleteByKey("q");
-  }, [search]);
+  }, [_search]);
 
   return (
     <div className="container space-y-4 p-4">
