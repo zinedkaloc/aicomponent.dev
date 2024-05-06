@@ -126,10 +126,6 @@ export interface PriceMetadata {
   amount: string;
   name: string;
   description: string;
-  feature_1: string;
-  feature_2: string;
-  feature_3: string;
-  feature_4: string;
   features: string[];
 }
 
