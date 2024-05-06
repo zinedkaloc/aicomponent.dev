@@ -1,10 +1,9 @@
 ---
 name: Bug report
-about: Create a bug report for AI landing page generator
+about: Create a bug report for AI Component generator
 title: "[BUG]"
-labels: ''
-assignees: ''
-
+labels: ""
+assignees: ""
 ---
 
 # Bug Report

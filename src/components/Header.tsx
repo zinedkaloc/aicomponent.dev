@@ -14,6 +14,7 @@ import {
 } from "@/components/Tooltip";
 import { Coins } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export default function Header() {
   const { set } = useSearchParams();
@@ -60,7 +61,7 @@ export default function Header() {
               <UserAvatar withDropdown />
             </div>
           ) : (
-            <div className="flex gap-0.5">
+            <div className="flex gap-2">
               <Button
                 variant="ghost"
                 size="sm"
@@ -72,7 +73,7 @@ export default function Header() {
               <Button
                 variant="pill"
                 size="sm"
-                className="auth-btn"
+                className="auth-btn "
                 onClick={openAuthModal}
               >
                 Sign Up
