@@ -2,25 +2,29 @@
 
 import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
-import { cn, moneyFormat, numberFormat, stripePrice } from "@/lib/utils";
+import { cn, moneyFormat, numberFormat } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { Price, PriceMetadata } from "@/types";
 import useSearchParams from "@/hooks/useSearchParams";
 import { createCheckoutSession } from "@/lib/actions";
 import actionWrapper from "@/lib/actions/actionWrapper";
+import { CheckCircle2 } from "lucide-react";
 
 function getMetadata(price: Price) {
-  return price.metadata as unknown as PriceMetadata;
+  let data = price.metadata as any;
+  if ("features" in data && typeof data.features === "string") {
+    data.features = JSON.parse(data.features);
+  }
+
+  return data as PriceMetadata;
 }
 
 export default function PriceItem({ price }: { price: Price }) {
   const { user } = useAuth();
   const isAuthenticated = !!user;
   const { set } = useSearchParams();
-  const { push } = useRouter();
 
   const { mutate, isPending } = useMutation<{ url: string }>({
     mutationKey: ["createCheckoutSession"],
@@ -68,6 +72,18 @@ export default function PriceItem({ price }: { price: Price }) {
           </p>
         </div>
       </div>
+      <ul className="my-10 space-y-3 px-8">
+        {getMetadata(price)?.features?.map?.((feature, index) => (
+          <li key={index} className="flex space-x-2.5">
+            <div className="flex-shrink-0">
+              <CheckCircle2 className="h-6 w-6 text-green-500" />
+            </div>
+            <div className="flex items-center">
+              <p className="text-left text-gray-600">{feature}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
       <div className="border-gray-200 p-5">
         <Button
           variant="pill"

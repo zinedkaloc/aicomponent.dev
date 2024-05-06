@@ -123,6 +123,7 @@ export interface PriceMetadata {
   amount: string;
   name: string;
   description: string;
+  features: string[];
 }
 
 export interface Pagination<T> {
