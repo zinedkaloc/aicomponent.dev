@@ -100,6 +100,9 @@ export interface Price {
   lookup_key: null | string;
   metadata: {
     amount: string;
+    feature_1: string;
+    feature_2: string;
+    feature_3: string;
   };
   nickname: null | string;
   product: string;
@@ -138,3 +141,17 @@ export interface Pagination<T> {
 declare module "@agnost/client" {
   interface User extends MyUser {}
 }
+
+export type AgnostError = {
+  errors: {
+    origin: string;
+    code: string;
+    message: string;
+    details: {
+      name: string;
+      code: string;
+      message: string;
+      stack: string;
+    };
+  };
+};

@@ -1,3 +1,4 @@
+import AppFooter from "@/components/AppFooter";
 import SubmissionForm from "@/components/SubmissionForm";
 
 export default function HomePage() {

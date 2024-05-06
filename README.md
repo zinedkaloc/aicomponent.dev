@@ -1,69 +1,51 @@
-# AI Landing Page Generator
+# AIcomponent.dev - React Component Generation with TailwindCSS Integration
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+AIcomponent.dev is an open-source platform designed to help React component generation with TailwindCSS integration. Helping developers with using OpenAI and seamless styling capabilities, AIcomponent.dev accelerates the UI component creation process, enabling rapid prototyping and efficient development workflows.
 
-## Description
+## Demo Video
 
-![A landing page generator](/public/logo.png)
+[Demo Video](https://twitter.com/zinedkaloc/status/1705541275007492527)
 
-The AI Landing Page Generator is a powerful tool that allows you to quickly create stunning landing pages using artificial intelligence. With this generator, you can save time and effort by automating the process of designing and coding landing pages. It is now experimental and only supports the creation of landing pages with HTML and Tailwind CSS.
+## Features
 
-## Installation
+- **AI Component Generation:** Utilize OpenAI to automatically generate React components based on user specifications and requirements.
+- **TailwindCSS Integration:** Seamlessly integrate TailwindCSS to style and customize generated components with ease, ensuring consistency and efficiency in design.
+- **Visual Preview:** Instantly visualize generated components in real-time within the platform, facilitating rapid iteration and fine-tuning.
+- **Customization Options:** Offer a wide range of customization options, including component props, styling attributes, and layout configurations, empowering developers to tailor components to their exact needs.
+- **Collaboration Tools:** Facilitate collaboration among team members by enabling easy sharing and exporting of generated components, fostering productivity and teamwork.
+- **Responsive Design Support:** Ensure compatibility with various screen sizes and devices by providing responsive design features within the platform.
+- **Extensive Component Library:** Curate a rich library of pre-built React components, templates, and snippets, offering developers a wealth of resources to expedite development workflows.
 
-1. Clone the repository: `git clone https://github.com/zinedkaloc/aipage.dev.git`
-2. Install the required dependencies: `pnpm install`
-3. Navigate to the project directory `cd aipage.dev`
-4. Copy the `.env.example` file to `.env` and fill in the required information.
+## Getting Started
 
-> Note: If you are not comfortable with creating OPENAI_API_KEY, please reach out to me at [zinedkaloc](https://twitter.com/zinedkaloc) and I will be happy to help you.
+To get started with Aicomponent.dev, follow these steps:
 
-## Usage
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/zinedkaloc/aicomponent.dev.git
+   ```
 
-1. Run the generator: `pnpm dev`
-2. Open the browser and go to `http://localhost:3000`
-3. Describe your website and click on the "Enter".
-4. Wait for the genie to generate the landing page.
+2. **Install Dependencies:**
+   ```bash
+   cd aicomponent.dev
+   pnpm i
+   ```
 
-### Test prompts
+3. **Configure Backend:**
+   For backend configuration, please send an email to [deniz@altogic.com] with your request.
 
-> A landing page for a design studio located in New york. They make websites and custom logos. All the work is very stylish and minimalist. The page should include a contact form a some call to actions as well as a link to the portfolio.
+4. **Start Development Server:**
+   ```bash
+   pnpm dev
+   ```
 
-> A landing page for an interior architecture company based in Istanbul. They specialize in creating exceptional spatial designs and innovative interior solutions. Their work showcases a unique blend of style, minimalism, and functionality. The landing page should feature a captivating design with using gradients, including a contact form, compelling call-to-action elements, and a prominent link to their portfolio.
-
-> A landing page for a cutting-edge technology company based in Istanbul. They specialize in developing innovative software solutions and advanced technological products. Their work is known for its sleek design, seamless user experience, and transformative capabilities. The landing page should feature a modern design, including a contact form, compelling call-to-action elements, and a prominent link to their product offerings.
-
-## Roadmap
-
-- [x] Create a basic landing page generator.
-- [x] Display the generated landing page in the main page with an iframe.
-- [ ] Update text input to textarea and add submit button.
-- [ ] Add support to download the generated landing page as a zip file.
-- [ ] Add support to deploy the generated landing page to Vercel or Netlify with a single click.
-- [ ] Add support for dark mode.
-- [ ] Add support for multiple pages.
-- [ ] Add support for multiple languages.
-
-This project is still in its early stages of development. If you have any suggestions or ideas, please feel free to open an issue or submit a pull request.
+5. **Open Aicomponent.dev:**
+   Visit `http://localhost:3000` in your browser to start using Aicomponent.dev.
 
 ## Contributing
 
-Thank you for considering contributing to this project! To contribute, follow these steps:
-
-1. Fork the repository.
-2. Create a new branch for your feature/fix: `git checkout -b feature/your-feature-name`.
-3. Add your changes with: `git add .`.
-4. Make your changes and commit them: `git commit -m "Add your feature description"`.
-5. Push to the branch: `git push origin feature/your-feature-name`.
-6. Open a pull request to the `master` branch of the original repository. Provide a clear and descriptive title and description for your pull request. Include any relevant information or context that would help with the review process.
-7. Wait for the maintainers to review your pull request. Make any necessary changes or address any feedback provided.
-8. Once your pull request is approved, it will be merged into the `master` branch.
-
-Congratulations on your contribution!
+Contributions are welcome! Please feel free to submit issues and pull requests to help improve AIcomponent.dev. For major changes, please open an issue first to discuss the proposed changes.
 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
-## Contact
-
-For any inquiries or feedback, please reach out to us at [zinedkaloc](https://twitter.com/zinedkaloc).
